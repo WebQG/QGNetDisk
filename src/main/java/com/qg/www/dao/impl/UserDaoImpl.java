@@ -1,8 +1,10 @@
 package com.qg.www.dao.impl;
 
+import com.qg.www.Enum.UserStatus;
 import com.qg.www.beans.User;
 import com.qg.www.dao.UserDao;
 import com.qg.www.utils.DbPoolConnection;
+import com.qg.www.utils.SqlCloseUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,16 +40,14 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setString(1,email);
             preparedStatement.setString(2,password);
             preparedStatement.setString(3,nickName);
-            //TODO 把状态改为枚举类；
-            preparedStatement.setInt(4,1);
+            preparedStatement.setInt(4,Integer.parseInt(UserStatus.ORDINARY_USER.getUserStatus()));
             //实现注册的过程；
             preparedStatement.execute();
-            //关闭流；
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
             //TODO 数据库异常后期需要的异常处理，暂时不弄
             e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         //返回注册成功后登录的用户；
         return  login(email,password);
@@ -69,11 +69,11 @@ public class UserDaoImpl implements UserDao {
             while(rs.next()){
                 return true;
             }
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
             //TODO 数据库异常后期需要的异常处理，暂时不弄
             e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return false;
     }
@@ -103,11 +103,11 @@ public class UserDaoImpl implements UserDao {
                     user.setUserId(rs.getInt("user_id"));
                 }
             }
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
             //TODO 数据库异常后期需要的异常处理，暂时不弄
             e.printStackTrace();
+        } finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return user;
     }
@@ -136,13 +136,7 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            //采用finally块关闭流；
-            try {
-                preparedStatement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return userList;
     }
@@ -166,13 +160,7 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            //采用finally块关闭流；
-            try {
-                preparedStatement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return false;
     }
@@ -198,6 +186,8 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             //TODO 捕获更新错误
             e.printStackTrace();
+        } finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return false;
     }
@@ -218,13 +208,7 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            //采用finally块关闭流；
-            try {
-                preparedStatement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return flag;
     }
@@ -252,13 +236,7 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            //采用finally块关闭流；
-            try {
-                preparedStatement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return null;
     }
@@ -283,13 +261,7 @@ public class UserDaoImpl implements UserDao {
             //TODO 后期使用日志
             e.printStackTrace();
         }finally {
-            //采用finally块关闭流；
-            try {
-                preparedStatement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return false;
     }

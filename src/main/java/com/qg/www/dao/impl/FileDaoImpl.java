@@ -3,6 +3,7 @@ package com.qg.www.dao.impl;
 import com.qg.www.beans.NetFile;
 import com.qg.www.dao.FileDao;
 import com.qg.www.utils.DbPoolConnection;
+import com.qg.www.utils.SqlCloseUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,7 +35,7 @@ public class FileDaoImpl implements FileDao {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            //利用finally块关闭文件资源
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return null;
     }
@@ -106,13 +107,7 @@ public class FileDaoImpl implements FileDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return fileList;
     }
@@ -128,12 +123,7 @@ public class FileDaoImpl implements FileDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return false;
     }
@@ -151,13 +141,7 @@ public class FileDaoImpl implements FileDao {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return 0;
     }
