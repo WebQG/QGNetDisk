@@ -1,5 +1,6 @@
 package com.qg.www.beans;
 
+import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,25 +16,26 @@ public class User {
     /**
      * 用户ID
      */
+    @Expose
     private int userId;
     /**
      * 用户邮箱也是用户名
      */
-    private String email;
+    @Expose private String email;
     /**
      * 用户登录密码
      */
-    private String password;
+    @Expose private String password;
     /**
      * 用户昵称
      */
-    private String nickName;
+    @Expose private String nickName;
     /**
      * 用户权限字段
      */
-    private int status;
+    @Expose private int status;
     /**
      * 用户名
      */
-    private String verifycode;
+    @Expose private String verifycode;
 }

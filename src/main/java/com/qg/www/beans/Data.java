@@ -1,8 +1,11 @@
 package com.qg.www.beans;
 
+import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
+import sun.nio.ch.Net;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -14,14 +17,15 @@ import java.util.List;
 @Setter
 @Getter
 public class Data {
-    private String email;
-    private String password;
-    private String nickname;
+    @Expose private String email;
+    @Expose private String password;
+    @Expose private String nickname;
     private int userid;
     private int status;
-    private String newnickname;
-    private String verifycode;
-    private List<User> userList;
+    @Expose private String newnickname;
+    @Expose private String verifycode;
+    @Expose private List<User> users;
+    @Expose private List<NetFile> files;
 
     public Data() {
     }

@@ -53,17 +53,18 @@ public class FileDaoImpl implements FileDao {
      * @return 是否成功添加；
      */
     @Override
-    public boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, long modifyTime, long fileSize) {
+    public boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, String modifyTime, long fileSize) {
         try {
             connection = DbPoolConnection.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement("INSERT INTO file (file_name,father_id,user_id," +
-                    "user_name,modify_time,real_path)VALUES (?,?,?,?,?,?);");
+                    "user_name,modify_time,filesize,real_path)VALUES (?,?,?,?,?,?,?)");
             preparedStatement.setString(1,fileName);
             preparedStatement.setInt(2,fatherId);
             preparedStatement.setInt(3,userId);
             preparedStatement.setString(4,userName);
-            preparedStatement.setLong(5,modifyTime);
+            preparedStatement.setString(5,modifyTime);
             preparedStatement.setLong(6,fileSize);
+            preparedStatement.setString(7,realPath);
             preparedStatement.execute();
             return true;
         } catch (SQLException e) {
@@ -91,6 +92,7 @@ public class FileDaoImpl implements FileDao {
         try {
             connection = DbPoolConnection.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("SELECT * FROM file WHERE father_id = ?");
+            preparedStatement.setInt(1,fileId);
             rs = preparedStatement.executeQuery();
             while(rs.next()){
                 NetFile netFile = new NetFile();
@@ -99,7 +101,7 @@ public class FileDaoImpl implements FileDao {
                 netFile.setFatherId(rs.getInt("father_id"));
                 netFile.setUserId(rs.getInt("user_id"));
                 netFile.setUserName(rs.getString("user_name"));
-                netFile.setModifyTime(rs.getLong("modify_time"));
+                netFile.setModifyTime(rs.getString("modify_time"));
                 netFile.setDownloadTimes(rs.getInt("download_times"));
                 netFile.setRealPath(rs.getString("real_path"));
                 fileList.add(netFile);

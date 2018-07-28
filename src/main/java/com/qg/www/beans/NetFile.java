@@ -1,5 +1,6 @@
 package com.qg.www.beans;
 
+import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,33 +15,38 @@ public class NetFile {
     /**
      * 文件ID
      */
-    private int fileId;
+    @Expose private int fileId;
     /**
      * 文件名
      */
-    private String fileName;
+    @Expose private String fileName;
     /**
      * 父节点ID
      */
-    private int fatherId;
+    @Expose private int fatherId;
     /**
      * 用户ID
      */
-    private int userId;
+    @Expose private int userId;
     /**
      * 用户名
      */
-    private String userName;
+    @Expose private String userName;
     /**
      * 修改时间
      */
-    private long modifyTime;
+    @Expose private String modifyTime;
     /**
      * 下载次数统计
      */
-    private int downloadTimes;
+    @Expose private int downloadTimes;
     /**
      * 文件大小
      */
-    private long fileSize;
+    @Expose private long fileSize;
+
+    /**
+     * 文件的相对路径
+     */
+    @Expose private String realPath;
 }

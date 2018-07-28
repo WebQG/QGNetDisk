@@ -28,7 +28,7 @@ public interface FileDao {
      * @param fileSize   文件大小
      * @return 是否成功添加；
      */
-    boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, long modifyTime, long fileSize);
+    boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, String modifyTime, long fileSize);
 
     /**
      *

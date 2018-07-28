@@ -45,7 +45,6 @@ public class FileServiceImpl implements FileService {
      * 添加文件或者文件夹
      *
      * @param fileName   文件名
-     * @param userName   用户名
      * @param userId     用户ID
      * @param fatherId   父目录ID
      * @param realPath   路径
@@ -53,12 +52,15 @@ public class FileServiceImpl implements FileService {
      * @param fileSize   文件大小
      * @return 是否成功添加；
      */
+    //TODO 得到userName
     @Override
-    public boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, long modifyTime, long fileSize) {
-        if(fileName!=null && userName != null && realPath != null){
+    public boolean addFile(String fileName,int userId, int fatherId, String realPath, String modifyTime, long fileSize) {
+        if(fileName!=null  && realPath != null){
+            UserDaoImpl userDao = new UserDaoImpl();
+            User user = userDao.queryUser(userId);
             FileDaoImpl fileDao = new FileDaoImpl();
             // 返回创建是否成功
-            return fileDao.addFile(fileName,userName,userId,fatherId,realPath,modifyTime,fileSize);
+            return fileDao.addFile(fileName,user.getNickName(),userId,fatherId,realPath,modifyTime,fileSize);
         }
         return false;
     }
@@ -73,7 +75,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public List<NetFile> listFile(int fileId) {
         FileDaoImpl fileDao = new FileDaoImpl();
-        return fileDao.listAllFile();
+        return fileDao.listFile(fileId);
     }
 
     /**
