@@ -1,21 +1,29 @@
-package com.qg.www.dao;
+package com.qg.www.service;
 
 import com.qg.www.beans.NetFile;
+import com.qg.www.beans.User;
 
-import java.io.File;
 import java.util.List;
 
-/**
- * 文件类的dao层接口
- */
-public interface FileDao {
+public interface FileService {
+
     /**
-     * 查询所有文件；
      *
-     * @return 文件列表
+     * 得到该文件或文件夹创建人的权限
+     *
+     * @param fileId 文件或文件夹的ID
+     * @return 文件或文件夹创建人的ID
+     */
+    User getUserStatusByFileId(int fileId);
+
+    /**
+     *
+     * 查询所有文件
+     *
+     * @return 经过排序的所有文件列表
      */
     List<NetFile> listAllFile();
-    //TODO 搜索排序
+
     /**
      * 添加文件或者文件夹
      *
@@ -47,19 +55,6 @@ public interface FileDao {
      * @return 是否删除成功
      */
     boolean deleteFile(int fileId);
-
-    /**
-     *
-     * 通过fileId找到创建该文件的用户ID
-     *
-     * @param fileId 文件或文件夹ID
-     * @return 创建其的用户ID
-     */
-    int getUserId(int fileId);
-
-
-
-
 
 
 }
