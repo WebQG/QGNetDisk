@@ -13,9 +13,10 @@ public interface UserService {
      * @param email
      * @param password
      * @param nickName
+     * @param unSafePassword
      * @return
      */
-    User register(String email, String password, String nickName);
+    User register(String email, String password, String nickName,String unSafePassword);
 
     /**
      *

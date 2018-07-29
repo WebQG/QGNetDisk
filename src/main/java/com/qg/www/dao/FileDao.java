@@ -2,11 +2,12 @@ package com.qg.www.dao;
 
 import com.qg.www.beans.NetFile;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * 文件类的dao层接口
+ * @author net
+ * @version 1.2
  */
 public interface FileDao {
     /**
@@ -56,6 +57,15 @@ public interface FileDao {
      * @return 创建其的用户ID
      */
     int getUserId(int fileId);
+
+    /**
+     * 通过文件ID，找出父目录ID；
+     * @param fileId
+     * @return
+     */
+    int getDiretoryByFileId(int fileId);
+
+   /* List<NetFile >listSortedFile( );*/
 
 
 

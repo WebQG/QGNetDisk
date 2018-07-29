@@ -1,31 +1,54 @@
 package com.qg.www.beans;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
-import sun.nio.ch.Net;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * 用以包装JSON中的data;
- *
+ *所有字段统一为小写，用于区别。
  * @author linxu
  * @version 1.0
  */
 @Setter
 @Getter
 public class Data {
-    @Expose private String email;
-    @Expose private String password;
-    @Expose private String nickname;
-    private int userid;
+    @Expose
+    private String email;
+
+    @Expose
+    private String password;
+
+    @SerializedName("nickname")
+    @Expose
+    private String nickName;
+    @Expose
+    @SerializedName("newnickname")
+    private String newNickName;
+    @Expose
+    @SerializedName("verifycode")
+    private String verifyCode;
+    @Expose
+    @SerializedName("users")
+    private List<User> users;
+    @Expose
+    @SerializedName("filepath")
+    private String filePath;
+
+    @SerializedName("fileid")
+    private int fileId;
+
+    @SerializedName("userid")
+    private int userId;
+
     private int status;
-    @Expose private String newnickname;
-    @Expose private String verifycode;
-    @Expose private List<User> users;
-    @Expose private List<NetFile> files;
+    @Expose
+    private User user;
+    @Expose
+    private List<NetFile> files;
 
     public Data() {
     }
@@ -38,8 +61,8 @@ public class Data {
     public Data(User user) {
         this.email = user.getEmail();
         this.password = user.getPassword();
-        this.nickname = user.getNickName();
+        this.nickName = user.getNickName();
         this.status = user.getStatus();
-        this.userid = user.getUserId();
+        this.userId = user.getUserId();
     }
 }

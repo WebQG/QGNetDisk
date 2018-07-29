@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author net
+ * @author linxu
  * @version 1.0
  * 传送邮箱验证码
  */
@@ -33,8 +33,6 @@ public class SendMailServlet extends HttpServlet {
         } catch (Exception e) {
             //TODO 日志信息；捕捉的是邮箱投递的异常；
         }
-        //将验证码设置成为会话；
-        // req.getSession().setAttribute("verifyCode",verifyCode);
         Map<String, String> map = new HashMap<>();
         map.put(email,verifyCode);
         req.getServletContext().setAttribute("map", map);

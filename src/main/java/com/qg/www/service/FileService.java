@@ -28,6 +28,7 @@ public interface FileService {
      * 添加文件或者文件夹
      *
      * @param fileName   文件名
+     * @param userName   用户名
      * @param userId     用户ID
      * @param fatherId   父目录ID
      * @param realPath   路径
@@ -35,7 +36,7 @@ public interface FileService {
      * @param fileSize   文件大小
      * @return 是否成功添加；
      */
-    boolean addFile(String fileName, int userId, int fatherId, String realPath, String modifyTime, long fileSize);
+    boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, String modifyTime, long fileSize);
 
     /**
      *
@@ -54,6 +55,13 @@ public interface FileService {
      * @return 是否删除成功
      */
     boolean deleteFile(int fileId);
+
+    /**
+     * 通过文件ID查找父目录的ID；
+     * @param fileId
+     * @return
+     */
+    int getFatherId(int fileId);
 
 
 }

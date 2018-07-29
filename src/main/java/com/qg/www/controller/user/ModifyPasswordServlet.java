@@ -30,7 +30,7 @@ public class ModifyPasswordServlet extends HttpServlet {
         //加密密码
         String password = DigestUtil.md5(unSafePassword);
         //获取用户ID
-        int userId = data.getUserid();
+        int userId = data.getUserId();
         //创建业务实现类
         UserServiceImpl userService = new UserServiceImpl();
         //构造打包器；

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class UserServiceImpl implements UserService {
     @Override
-    public User register(String email, String password, String nickName) {
+    public User register(String email, String password, String nickName,String unSafePassword) {
         if (email != null && password != null && nickName != null) {
             UserDaoImpl userDao = new UserDaoImpl();
             //存在返回空；

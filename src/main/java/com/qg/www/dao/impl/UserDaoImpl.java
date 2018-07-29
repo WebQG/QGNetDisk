@@ -98,9 +98,14 @@ public class UserDaoImpl implements UserDao {
                 if(password.equals(rs.getString("password"))) {
                     user.setEmail(email);
                     user.setPassword(password);
-                    user.setNickName(rs.getString("nickname"));
-                    user.setStatus(rs.getInt("status"));
-                    user.setUserId(rs.getInt("user_id"));
+                    String nickName=rs.getString("nickname");
+                    int userID=rs.getInt("user_id");
+                    int status=rs.getInt("status");
+                    System.out.println(userID+""+status);
+                    user.setNickName(nickName);
+                    user.setStatus(status);
+                    user.setUserId(userID);
+                    System.out.println(user.getUserId());
                 }
             }
         } catch (SQLException e) {
@@ -222,7 +227,7 @@ public class UserDaoImpl implements UserDao {
         User user=new User();
         try {
             connection = DbPoolConnection.getDataSourceInstance().getConnection();
-            preparedStatement = connection.prepareStatement("SELECT * FROM user WHERE user_id =?");
+            preparedStatement = connection.prepareStatement("SELECT * FROM user WHERE user_id =?;");
             preparedStatement.setInt(1,userId);
             rs = preparedStatement.executeQuery();
             if(rs.next()){

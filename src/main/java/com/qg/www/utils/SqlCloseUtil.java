@@ -1,9 +1,17 @@
 package com.qg.www.utils;
 
-import java.sql.SQLException;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Connection;
+
+/**
+ * @author net
+ * @version 1.2
+ */
 public class SqlCloseUtil {
-    public static void close(java.sql.Connection con, java.sql.PreparedStatement ps, java.sql.ResultSet rs) {
+    public static void close(Connection con, PreparedStatement ps, ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();

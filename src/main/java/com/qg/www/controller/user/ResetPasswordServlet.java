@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * @author linxu
+ * @version 1.1
+ * 重置密码控制；
+ */
 @WebServlet("/user/resetpassword")
 public class ResetPasswordServlet extends HttpServlet {
     @Override
@@ -27,7 +32,7 @@ public class ResetPasswordServlet extends HttpServlet {
         //获取重置密码
         String password = data.getPassword();
         //邮箱验证码
-        String verifyCode = data.getVerifycode();
+        String verifyCode = data.getVerifyCode();
         //创建数据打包器；
         DataPack dataPack = new DataPack();
         //获取验证码的map集合

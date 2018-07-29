@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * 用户注册servlet；
  *
- * @author net
+ * @author linxu
  * @version 1.0
  */
 @WebServlet("/user/register")
@@ -34,9 +34,10 @@ public class UserRegisterServlet extends HttpServlet {
         //获取邮箱
         String email = data.getEmail();
         //获取昵称
-        String nickName = data.getNickname();
+        String nickName = data.getNickName();
         //获取验证码
-        String verifyCode = data.getVerifycode();
+        String unSafePassword=data.getPassword();
+        String verifyCode = data.getVerifyCode();
         //加密密码；
         String password = DigestUtil.md5(data.getPassword());
         User user;
@@ -51,9 +52,10 @@ public class UserRegisterServlet extends HttpServlet {
         } else {
             //注册用户
             UserServiceImpl userService = new UserServiceImpl();
-            user = userService.register(email, password, nickName);
+            user = userService.register(email, password, nickName,unSafePassword);
             //邮箱是否存在；
             if (null != user) {
+                user.setPassword(unSafePassword);
                 Data datas = new Data(user);
                 dataPack.setStatus(Status.NORMAL.getStatus());
                 dataPack.setData(datas);

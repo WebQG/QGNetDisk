@@ -57,14 +57,13 @@ public class FileDaoImpl implements FileDao {
         try {
             connection = DbPoolConnection.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement("INSERT INTO file (file_name,father_id,user_id," +
-                    "user_name,modify_time,filesize,real_path)VALUES (?,?,?,?,?,?,?)");
+                    "user_name,modify_time,real_path)VALUES (?,?,?,?,?,?);");
             preparedStatement.setString(1,fileName);
             preparedStatement.setInt(2,fatherId);
             preparedStatement.setInt(3,userId);
             preparedStatement.setString(4,userName);
             preparedStatement.setString(5,modifyTime);
             preparedStatement.setLong(6,fileSize);
-            preparedStatement.setString(7,realPath);
             preparedStatement.execute();
             return true;
         } catch (SQLException e) {
@@ -144,6 +143,28 @@ public class FileDaoImpl implements FileDao {
             e.printStackTrace();
         } finally {
             SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
+        return 0;
+    }
+
+    /**
+     * 通过文件ID，找出父目录ID；
+     *
+     * @param fileId
+     * @return
+     */
+    @Override
+    public int getDiretoryByFileId(int fileId) {
+        try {
+            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            preparedStatement = connection.prepareStatement("SELECT father_id FROM file WHERE file_id=?;");
+            preparedStatement.setInt(1, fileId);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("father_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return 0;
     }

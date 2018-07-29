@@ -1,8 +1,11 @@
 package com.qg.www.beans;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.servlet.annotation.WebServlet;
 
 /**
  * @author linxu
@@ -15,38 +18,55 @@ public class NetFile {
     /**
      * 文件ID
      */
-    @Expose private int fileId;
+    @Expose
+    @SerializedName("fileid")
+    private int fileId;
     /**
      * 文件名
      */
-    @Expose private String fileName;
+    @Expose
+    @SerializedName("filename")
+    private String fileName;
     /**
      * 父节点ID
      */
-    @Expose private int fatherId;
+    @Expose
+    @SerializedName("fatherid")
+    private int fatherId;
     /**
      * 用户ID
      */
-    @Expose private int userId;
+    @Expose
+    @SerializedName("userid")
+    private int userId;
     /**
      * 用户名
      */
-    @Expose private String userName;
+    @Expose
+    @SerializedName("username")
+    private String userName;
     /**
      * 修改时间
      */
-    @Expose private String modifyTime;
+    @Expose
+    @SerializedName("modifytime")
+    private String modifyTime;
     /**
      * 下载次数统计
      */
-    @Expose private int downloadTimes;
+    @Expose
+    @SerializedName("downloadtimes")
+    private int downloadTimes;
     /**
      * 文件大小
      */
-    @Expose private long fileSize;
-
+    @Expose
+    @SerializedName("filesize")
+    private long fileSize;
     /**
-     * 文件的相对路径
+     * 文件的路径
      */
-    @Expose private String realPath;
+    @Expose
+    @SerializedName("realpath")
+    private String realPath;
 }
