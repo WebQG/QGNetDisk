@@ -181,8 +181,6 @@ public class UploadServlet extends HttpServlet {
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String dateNowStr = sdf.format(date);
-                    UserServiceImpl userService1 = new UserServiceImpl();
-                    User user = userService.queryUser(Integer.parseInt(userId));
                     // 向数据库添加file信息
                     System.out.println(fileName);
                     fileService.addFile(fileName, user.getNickName(),user.getUserId(), Integer.parseInt(fileId),

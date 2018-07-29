@@ -60,9 +60,8 @@ public class NewFolderServlet extends HttpServlet {
             if (userStatus > fileUserStatus || user.getUserId() == Integer.parseInt(userId)) {
                 // 文件不存在，新建文件夹，设置一切正常状态码
                 file.mkdir();
-
                 // 大小为0，修改时间为0，即不显示
-                fileService.addFile(fileName, Integer.parseInt(userId), Integer.parseInt(fileId), filePath, "", 0);
+                fileService.addFile(fileName, user.getNickName(),Integer.parseInt(userId), Integer.parseInt(fileId), filePath, "", 0);
 
                 dataPack.setStatus(Status.NORMAL.getStatus());
 
