@@ -2,6 +2,7 @@ package com.qg.www.dao;
 
 import com.qg.www.beans.NetFile;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -67,6 +68,14 @@ public interface FileDao {
 
    /* List<NetFile >listSortedFile( );*/
 
+    /**
+     *
+     * 用户下载时使文件下载量加1
+     *
+     * @param realPath 文件的绝对路径
+     * @return 是否增加成功
+     */
+    boolean updateDownloadTimes(String realPath);
 
 
 

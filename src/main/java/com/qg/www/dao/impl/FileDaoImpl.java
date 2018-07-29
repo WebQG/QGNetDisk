@@ -57,13 +57,14 @@ public class FileDaoImpl implements FileDao {
         try {
             connection = DbPoolConnection.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement("INSERT INTO file (file_name,father_id,user_id," +
-                    "user_name,modify_time,real_path)VALUES (?,?,?,?,?,?);");
+                    "user_name,modify_time,filesize,real_path)VALUES (?,?,?,?,?,?,?)");
             preparedStatement.setString(1,fileName);
             preparedStatement.setInt(2,fatherId);
             preparedStatement.setInt(3,userId);
             preparedStatement.setString(4,userName);
             preparedStatement.setString(5,modifyTime);
             preparedStatement.setLong(6,fileSize);
+            preparedStatement.setString(7,realPath);
             preparedStatement.execute();
             return true;
         } catch (SQLException e) {
@@ -167,5 +168,27 @@ public class FileDaoImpl implements FileDao {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * 用户下载时使文件下载量加1
+     *
+     * @param realPath 文件的相对路径
+     * @return 是否增加成功
+     */
+    @Override
+    public boolean updateDownloadTimes(String realPath) {
+        try {
+            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            preparedStatement = connection.prepareStatement("UPDATE file SET download_times = download_times + 1 WHERE real_path=?");
+            preparedStatement.setString(1,realPath);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
+        return false;
     }
 }

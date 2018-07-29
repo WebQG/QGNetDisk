@@ -1,5 +1,6 @@
 package com.qg.www.controller.file;
 
+import com.qg.www.service.impl.FileServiceImpl;
 import com.qg.www.utils.DownloadUtil;
 
 import javax.servlet.ServletException;
@@ -20,8 +21,13 @@ import java.io.InputStream;
 public class DownloadServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // 得到文件的绝对路径
+        System.out.println("开始");
+        // 得到文件的绝对路径 如QG/移动组/文件.exe
         String filePath = req.getParameter("filepath");
+        System.out.println(filePath);
+        // 将下载次数+1
+        FileServiceImpl fileService = new FileServiceImpl();
+        fileService.updateDownloadTimes(filePath);
 
         int index = filePath.lastIndexOf("/");
         // 得到文件名
@@ -48,6 +54,8 @@ public class DownloadServlet extends HttpServlet {
         while ((hasRead = is.read(buffer)) != -1) {
             os.write(buffer, 0, hasRead);
         }
+
+
         os.close();
         is.close();
     }

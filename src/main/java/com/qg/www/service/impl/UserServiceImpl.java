@@ -81,4 +81,10 @@ public class UserServiceImpl implements UserService {
         UserDaoImpl userDao = new UserDaoImpl();
         return userDao.resetPassword(email, password);
     }
+
+    @Override
+    public User queryUser(int userId) {
+        UserDaoImpl userDao = new UserDaoImpl();
+        return userDao.queryUser(userId);
+    }
 }

@@ -58,6 +58,8 @@ public interface UserDao {
     boolean modifyStatus(int status, int userIdBy);
     /**
      *
+     * 通过当前用户ID得到用户的基本信息
+     *
      * @param userId 当前用户的ID
      * @return 当前用户的基本信息
      */
