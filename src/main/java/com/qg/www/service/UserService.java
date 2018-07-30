@@ -65,11 +65,10 @@ public interface UserService {
     boolean resetPassword(String email,String password);
 
     /**
-     * 通过当前用户ID得到用户的基本信息
-     * @param userId 当前用户的ID
-     * @return 当前用户的基本信息
+     * 通过用户ID找到用户并且返回
+     * @param userId 用户ID
+     * @return 用户
      */
-    User queryUser(int userId);
-
+    User getUserByUserId(int userId);
 
 }
