@@ -1,8 +1,9 @@
 package com.qg.www.controller.user;
 
 import com.google.gson.Gson;
-import com.qg.www.Enum.Status;
+import com.google.gson.GsonBuilder;
 import com.qg.www.beans.DataPack;
+import com.qg.www.enums.Status;
 import com.qg.www.utils.RandomVerifyCode;
 import com.qg.www.utils.SendMail;
 
@@ -40,6 +41,6 @@ public class SendMailServlet extends HttpServlet {
         DataPack dataPack = new DataPack();
         dataPack.setStatus(Status.NORMAL.getStatus());
         dataPack.setData(null);
-        resp.getWriter().print(new Gson().toJson(dataPack));
+        resp.getWriter().print(new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(dataPack));
     }
 }

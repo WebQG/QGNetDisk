@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,23 +23,91 @@ public class FileDaoImpl implements FileDao {
     private PreparedStatement preparedStatement;
     private ResultSet rs;
     boolean flag=false;
+
+
     /**
-     * 查询所有文件；
+     * 模糊搜索文件；
      *
-     * @return 文件列表
+     * @param fileID  目录的ID；
+     * @param keyWord 关键字；
+     * @return 文件列表；
      */
     @Override
-    public List<NetFile> listAllFile() {
+    public List<NetFile> searchFile(int fileID, String keyWord) {
+        //创建文件List
+        List<NetFile> fileList=new ArrayList<>();
         try {
-            //TODO 补充文件查询
             connection=DbPoolConnection.getDataSourceInstance().getConnection();
-            preparedStatement=connection.prepareStatement("SELECT * FROM file;");
+            preparedStatement=connection.prepareStatement("SELECT * from file WHERE father_id=? AND file_name LIKE ?;");
+            preparedStatement.setInt(1,fileID);
+            //模糊搜索；
+            preparedStatement.setString(2,"%"+keyWord+"%");
+            rs=preparedStatement.executeQuery();
+            while (rs.next()){
+                //创建文件；
+                NetFile file= new NetFile();
+                //初始化文件参数；
+                file.setRealPath(rs.getString("real_path"));
+                file.setFileId(rs.getInt("file_id"));
+                file.setFileName(rs.getString("file_name"));
+                file.setFatherId(rs.getInt("father_id"));
+                file.setUserId(rs.getInt("user_id"));
+                file.setUserName(rs.getString("user_name"));
+                file.setModifyTime(rs.getString("modify_time"));
+                file.setDownloadTimes(rs.getInt("download_times"));
+                //将文件添加进列表；
+                fileList.add( file);
+            }
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            SqlCloseUtil.close(connection,preparedStatement,rs);
+            //TODO 采用日志；
         }
-        return null;
+        return fileList;
+    }
+
+    /**
+     * 排序浏览文件；
+     *
+     * @param fileId 父目录ID
+     * @param type   排序方式；
+     * @return 文件列表；
+     */
+    @Override
+    public List<NetFile> listSortedFile(int fileId, String type) {
+        List<NetFile> fileList=new ArrayList<>();
+        String sql;
+        //判断是按照日期排序或者是拼音排序
+        if("num".equals(type)){
+            //日期降序；
+            sql="SELECT *from  file    where father_id=?  order by modify_time desc ;";
+        }else {
+            //拼音升序；
+            sql="select * from file where father_id=? order by convert ( file_name using gbk)collate gbk_chinese_ci  ;";
+        }
+        try {
+            connection=DbPoolConnection.getDataSourceInstance().getConnection();
+            preparedStatement=connection.prepareStatement(sql);
+            preparedStatement.setInt(1,fileId);
+            rs=preparedStatement.executeQuery();
+            while(rs.next()){
+                //创建新的文件对象；
+                NetFile file=new NetFile();
+                //初始化文件参数；
+                file.setRealPath(rs.getString("real_path"));
+                file.setFileId(rs.getInt("file_id"));
+                file.setFileName(rs.getString("file_name"));
+                file.setFatherId(rs.getInt("father_id"));
+                file.setUserId(rs.getInt("user_id"));
+                file.setUserName(rs.getString("user_name"));
+                file.setDownloadTimes(rs.getInt("download_times"));
+                file.setModifyTime(rs.getString("modify_time"));
+                //将文件添加进列表；
+                fileList.add( file);
+            }
+        } catch (SQLException e) {
+           //TODO 日志记录异常；
+        }
+        return fileList;
     }
 
     /**
@@ -138,7 +208,7 @@ public class FileDaoImpl implements FileDao {
             preparedStatement.setInt(1,fileId);
             rs = preparedStatement.executeQuery();
             if(rs.next()){
-                return rs.getInt("file_id");
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -188,6 +258,33 @@ public class FileDaoImpl implements FileDao {
             e.printStackTrace();
         }finally {
             SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
+        return false;
+    }
+
+    /**
+     * 重命名文件
+     *
+     * @param fileId      文件ID
+     * @param newFileName 新的文件名
+     * @return 是否成功修改
+     */
+    @Override
+    public boolean modifyFileName(int fileId, String newFileName) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateNowStr = sdf.format(date);
+        try {
+            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            preparedStatement = connection.prepareStatement("UPDATE file SET file_name=? ,modify_time = ? WHERE file_id=?;");
+            preparedStatement.setString(1, newFileName);
+            preparedStatement.setString(2,dateNowStr);
+            preparedStatement.setInt(3, fileId);
+            return preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            SqlCloseUtil.close(connection, preparedStatement, rs);
         }
         return false;
     }

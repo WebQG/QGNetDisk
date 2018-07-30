@@ -17,17 +17,18 @@ public interface FileService {
     User getUserStatusByFileId(int fileId);
 
     /**
-     *
-     * 查询所有文件
-     *
-     * @return 经过排序的所有文件列表
+     *模糊搜索文件列表；
+     * @param fileId 文件ID
+     * @param keyWord 关键字
+     * @return 文件列表；
      */
-    List<NetFile> listAllFile();
+    List<NetFile> searchFile(int fileId,String keyWord);
 
     /**
      * 添加文件或者文件夹
      *
      * @param fileName   文件名
+     * @param userName   用户名
      * @param userId     用户ID
      * @param fatherId   父目录ID
      * @param realPath   路径
@@ -63,6 +64,15 @@ public interface FileService {
     int getFatherId(int fileId);
 
     /**
+     * 修改文件的名称，同时返回新的文件列表
+     *
+     * @param fileId      文件的ID
+     * @param newFileName 新的文件名字
+     * @return 新的文件列表
+     */
+    List<NetFile> renameFile(int fileId, String newFileName);
+
+    /**
      *
      * 用户下载时使文件下载量加1
      *
@@ -71,5 +81,12 @@ public interface FileService {
      */
     boolean updateDownloadTimes(String realPath);
 
+    /**
+     * 按照类型进行目录下文件的排序；
+     * @param fileId 目录ID
+     * @param type 排序类型；
+     * @return 文件列表
+     */
+    List<NetFile> listSortedFile(int fileId,String type);
 
 }

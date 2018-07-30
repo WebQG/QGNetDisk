@@ -1,10 +1,10 @@
 package com.qg.www.controller.file;
 
 import com.google.gson.Gson;
-import com.qg.www.Enum.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
+import com.qg.www.enums.Status;
 import com.qg.www.service.impl.FileServiceImpl;
 import org.apache.commons.io.FileUtils;
 
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-
 /**
  * @author linxu
  * @version 1.2

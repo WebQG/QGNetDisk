@@ -1,7 +1,7 @@
 package com.qg.www.dao.impl;
 
-import com.qg.www.Enum.UserStatus;
 import com.qg.www.beans.User;
+import com.qg.www.enums.UserStatus;
 import com.qg.www.dao.UserDao;
 import com.qg.www.utils.DbPoolConnection;
 import com.qg.www.utils.SqlCloseUtil;
@@ -40,7 +40,7 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setString(1,email);
             preparedStatement.setString(2,password);
             preparedStatement.setString(3,nickName);
-            preparedStatement.setInt(4,Integer.parseInt(UserStatus.ORDINARY_USER.getUserStatus()));
+            preparedStatement.setInt(4,UserStatus.ORDINARY_USER.getUserStatus());
             //实现注册的过程；
             preparedStatement.execute();
         } catch (SQLException e) {

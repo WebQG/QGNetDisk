@@ -9,28 +9,50 @@ import java.util.List;
 
 /**
  * 用以包装JSON中的data;
- *所有字段统一为小写，用于区别。
+ * 所有字段统一为小写，用于区别。
+ *
  * @author linxu
  * @version 1.0
  */
 @Setter
 @Getter
 public class Data {
+    /**
+     * 用户邮箱；
+     */
     @Expose
     private String email;
 
+    /**
+     * 密码；
+     */
     @Expose
     private String password;
 
+    /**
+     * 昵称
+     */
     @SerializedName("nickname")
     @Expose
     private String nickName;
+
+    /**
+     * 新的昵称
+     */
     @Expose
     @SerializedName("newnickname")
     private String newNickName;
+
+    /**
+     * 验证码
+     */
     @Expose
     @SerializedName("verifycode")
     private String verifyCode;
+
+    /**
+     * 用户列表
+     */
     @Expose
     @SerializedName("users")
     private List<User> users;
@@ -44,9 +66,20 @@ public class Data {
     @SerializedName("userid")
     private int userId;
 
+    @SerializedName("filename")
+    private String fileName;
+
+    @SerializedName("newfilename")
+    private String newFileName;
+
+    @SerializedName("operatorid")
+    private int operatorID;
+
     private int status;
+
     @Expose
     private User user;
+
     @Expose
     private List<NetFile> files;
 

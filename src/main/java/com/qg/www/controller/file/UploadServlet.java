@@ -2,11 +2,11 @@ package com.qg.www.controller.file;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.qg.www.Enum.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
 import com.qg.www.beans.User;
+import com.qg.www.enums.Status;
 import com.qg.www.service.FileService;
 import com.qg.www.service.UserService;
 import com.qg.www.service.impl.FileServiceImpl;
@@ -116,7 +116,7 @@ public class UploadServlet extends HttpServlet {
         UserServiceImpl userService = new UserServiceImpl();
         FileServiceImpl fileService = new FileServiceImpl();
         User fileUser = fileService.getUserStatusByFileId(Integer.parseInt(fileId));
-        User user = userService.queryUser(Integer.parseInt(userId));
+        User user = userService.getUserByUserId(Integer.parseInt(userId));
         // 包装Json
         DataPack dataPack = new DataPack();
         // 判断用户权限和 用户跟目录的创建人是否是同一个人

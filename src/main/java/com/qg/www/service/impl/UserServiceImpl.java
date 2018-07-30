@@ -82,9 +82,18 @@ public class UserServiceImpl implements UserService {
         return userDao.resetPassword(email, password);
     }
 
+    /**
+     * 通过用户ID找到用户并且返回
+     *
+     * @param userId 用户ID
+     * @return 用户
+     */
     @Override
-    public User queryUser(int userId) {
-        UserDaoImpl userDao = new UserDaoImpl();
-        return userDao.queryUser(userId);
+    public User getUserByUserId(int userId) {
+        if(userId>0){
+            UserDaoImpl userDao=new UserDaoImpl();
+            return userDao.queryUser(userId);
+        }
+        return null;
     }
 }

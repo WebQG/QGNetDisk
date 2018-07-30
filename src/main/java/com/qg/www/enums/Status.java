@@ -1,6 +1,9 @@
-package com.qg.www.Enum;
-
-
+package com.qg.www.enums;
+/**
+ * @author zenghuachen
+ * @version  1.3
+ * 返回状态码枚举类；
+ */
 public enum  Status {
     /**
      * 一切正常

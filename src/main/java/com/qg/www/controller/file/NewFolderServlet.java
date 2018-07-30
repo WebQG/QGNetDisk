@@ -1,11 +1,11 @@
 package com.qg.www.controller.file;
 
 import com.google.gson.Gson;
-import com.qg.www.Enum.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
 import com.qg.www.beans.User;
+import com.qg.www.enums.Status;
 import com.qg.www.service.impl.FileServiceImpl;
 import com.qg.www.service.impl.UserServiceImpl;
 
@@ -52,7 +52,7 @@ public class NewFolderServlet extends HttpServlet {
             FileServiceImpl fileService = new FileServiceImpl();
             UserServiceImpl userService = new UserServiceImpl();
             User fileUser = fileService.getUserStatusByFileId(Integer.parseInt(fileId));
-            User user = userService.queryUser(Integer.parseInt(userId));
+            User user = userService.getUserByUserId(Integer.parseInt(userId));
             int userStatus = user.getStatus();
             int fileUserStatus = fileUser.getStatus();
 
