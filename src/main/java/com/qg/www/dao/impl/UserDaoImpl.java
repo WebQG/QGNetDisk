@@ -101,11 +101,10 @@ public class UserDaoImpl implements UserDao {
                     String nickName=rs.getString("nickname");
                     int userID=rs.getInt("user_id");
                     int status=rs.getInt("status");
-                    System.out.println(userID+""+status);
                     user.setNickName(nickName);
                     user.setStatus(status);
                     user.setUserId(userID);
-                    System.out.println(user.getUserId());
+                    return user;
                 }
             }
         } catch (SQLException e) {
@@ -114,7 +113,7 @@ public class UserDaoImpl implements UserDao {
         } finally {
             SqlCloseUtil.close(connection,preparedStatement,rs);
         }
-        return user;
+        return null;
     }
 
     /**

@@ -7,6 +7,7 @@ import com.qg.www.dao.impl.FileDaoImpl;
 import com.qg.www.dao.impl.UserDaoImpl;
 import com.qg.www.enums.Status;
 import com.qg.www.service.UserService;
+import com.qg.www.utils.DigestUtil;
 import com.qg.www.utils.RandomVerifyCodeUtil;
 import com.qg.www.utils.SendMailUtil;
 
@@ -49,10 +50,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String email, String password) {
+    public DataPack login(User user) {
+        UserDaoImpl userDao = new UserDaoImpl();
+        DataPack dataPack = new DataPack();
+        Data data;
+        //解析数据；
+        String email = user.getEmail();
+        //加密前的密码；
+        String unSafePassword = user.getPassword();
+        //对密码进行加密；
+        String password = DigestUtil.md5(user.getPassword());
+        //邮箱和密码不为空；
         if (email != null && password != null) {
-            UserDaoImpl userDao = new UserDaoImpl();
-            return userDao.login(email, password);
+            //邮箱存在；
+            if (userDao.isExist(email)) {
+                //返回登录结果
+                User newUser = userDao.login(email, password);
+                //判断登录状态；
+                if (null == newUser) {
+                    //密码不正确；
+                    dataPack.setData(null);
+                    dataPack.setStatus(Status.PASSWORD_WROSE.getStatus());
+                    return dataPack;
+                } else {
+                    data = new Data(newUser);
+                    data.setPassword(unSafePassword);
+                    dataPack.setData(data);
+                    dataPack.setStatus(Status.NORMAL.getStatus());
+                    return dataPack;
+                }
+            } else {
+                //邮箱不存在；
+                dataPack.setStatus(Status.EMAIL_NOEXIST.getStatus());
+                dataPack.setData(null);
+                return dataPack;
+            }
         } else {
             return null;
         }
@@ -136,7 +168,7 @@ public class UserServiceImpl implements UserService {
             if (!userDao.isExist(email)) {
                 try {
                     //发送邮件；
-                    SendMailUtil.sendMail(email, RandomVerifyCodeUtil.getVerifyCode());
+                    SendMailUtil.sendMail(email, verifyCode);
                     dataPack.setStatus(Status.NORMAL.getStatus());
                     return dataPack;
                 } catch (Exception e) {
@@ -153,7 +185,7 @@ public class UserServiceImpl implements UserService {
             if (new UserDaoImpl().isExist(email)) {
                 //存在邮箱，则发送验证码；
                 try {
-                    SendMailUtil.sendMail(email, RandomVerifyCodeUtil.getVerifyCode());
+                    SendMailUtil.sendMail(email, verifyCode);
                     dataPack.setStatus(Status.NORMAL.getStatus());
                     return dataPack;
                 } catch (Exception e) {
@@ -166,5 +198,30 @@ public class UserServiceImpl implements UserService {
             }
         }
         return dataPack;
+    }
+
+    /**
+     * 判断邮箱验证码是否匹配；
+     *
+     * @param data 数据
+     * @param map  全局存储器
+     * @return 包装数据
+     */
+    @Override
+    public DataPack validateMail(Data data, Map<String, String> map) {
+        //获取邮箱和验证码
+        String email = data.getEmail();
+        String verifyCode = data.getVerifyCode();
+        //创建打包器；
+        DataPack dataPack = new DataPack();
+        //判断是否匹配；
+        if (null != map && verifyCode.equals(map.get(email))) {
+            dataPack.setStatus(Status.NORMAL.getStatus());
+            map.remove(email);
+            return dataPack;
+        }else {
+            dataPack.setStatus(Status.VERIFYCODE_WROSE.getStatus());
+            return dataPack;
+        }
     }
 }

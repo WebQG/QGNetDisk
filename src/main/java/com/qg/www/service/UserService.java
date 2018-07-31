@@ -1,5 +1,6 @@
 package com.qg.www.service;
 
+import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
 
@@ -27,11 +28,10 @@ public interface UserService {
     /**
      * 登录方法
      *
-     * @param email    邮箱
-     * @param password 密码
-     * @return 用户；
+     * @param user 用户；
+     * @return 包装数据
      */
-    User login(String email, String password);
+    DataPack login(User user);
 
     /**
      * 修改昵称
@@ -92,6 +92,15 @@ public interface UserService {
      * @param isRegister 是否注册
      * @return 封装数据；
      */
-    DataPack sendMail(String email, String verifyCode,String isRegister);
+    DataPack sendMail(String email, String verifyCode, String isRegister);
+
+    /**
+     * 判断邮箱验证码是否匹配；
+     *
+     * @param data 数据
+     * @param map  全局存储器
+     * @return 包装数据
+     */
+    DataPack validateMail(Data data, Map<String, String> map);
 
 }
