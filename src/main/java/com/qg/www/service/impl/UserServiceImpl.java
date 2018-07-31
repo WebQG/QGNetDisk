@@ -1,11 +1,18 @@
 package com.qg.www.service.impl;
 
+import com.qg.www.beans.Data;
+import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
+import com.qg.www.dao.impl.FileDaoImpl;
 import com.qg.www.dao.impl.UserDaoImpl;
+import com.qg.www.enums.Status;
 import com.qg.www.service.UserService;
+import com.qg.www.utils.RandomVerifyCodeUtil;
+import com.qg.www.utils.SendMailUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author net
@@ -14,18 +21,31 @@ import java.util.List;
  */
 public class UserServiceImpl implements UserService {
     @Override
-    public User register(String email, String password, String nickName,String unSafePassword) {
-        if (email != null && password != null && nickName != null) {
-            UserDaoImpl userDao = new UserDaoImpl();
-            //存在返回空；
-            if (userDao.isExist(email)) {
-                return null;
-            } else {
-                //返回一个注册成功后的用户
-                return userDao.addUser(email, password, nickName);
+    public DataPack register(String email, String password, String nickName, String unSafePassword, Map<String, String> map, String verifyCode) {
+        //创建数据打包器；
+        DataPack dataPack = new DataPack();
+        UserDaoImpl userDao = new UserDaoImpl();
+        if (map == null || !verifyCode.equals(map.get(email))) {
+            dataPack.setStatus(Status.VERIFYCODE_WROSE.getStatus());
+            dataPack.setData(null);
+        } else if (!userDao.isExist(email)) {
+            //注册用户
+            UserServiceImpl userService = new UserServiceImpl();
+            User user = userDao.addUser(email, password, nickName);
+            //邮箱是否存在；
+            if (null != user) {
+                //邮箱未注册；
+                user.setPassword(unSafePassword);
+                Data datas = new Data(user);
+                dataPack.setStatus(Status.NORMAL.getStatus());
+                dataPack.setData(datas);
             }
+        } else {
+            //邮箱已经被注册
+            dataPack.setStatus(Status.EMIAL_ISREGISTER.getStatus());
+            dataPack.setData(null);
         }
-        return null;
+        return dataPack;
     }
 
     @Override
@@ -90,10 +110,61 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User getUserByUserId(int userId) {
-        if(userId>0){
-            UserDaoImpl userDao=new UserDaoImpl();
+        if (userId > 0) {
+            UserDaoImpl userDao = new UserDaoImpl();
             return userDao.queryUser(userId);
         }
         return null;
+    }
+
+    /**
+     * 发送邮件
+     *
+     * @param email      邮箱信息；
+     * @param verifyCode 验证码
+     * @param isRegister
+     * @return 封装数据；
+     */
+    @Override
+    public DataPack sendMail(String email, String verifyCode, String isRegister) {
+        //构造数据打包器；
+        DataPack dataPack = new DataPack();
+        //判断是否是注册用户；
+        if ((null != email) && (null != isRegister)) {
+            UserDaoImpl userDao = new UserDaoImpl();
+            //邮箱未注册；
+            if (!userDao.isExist(email)) {
+                try {
+                    //发送邮件；
+                    SendMailUtil.sendMail(email, RandomVerifyCodeUtil.getVerifyCode());
+                    dataPack.setStatus(Status.NORMAL.getStatus());
+                    return dataPack;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //返回错误，不发送邮箱验证码；
+                dataPack.setStatus(Status.EMIAL_ISREGISTER.getStatus());
+                return dataPack;
+            }
+
+        } else {
+            //则是忘记密码的重置；
+            if (new UserDaoImpl().isExist(email)) {
+                //存在邮箱，则发送验证码；
+                try {
+                    SendMailUtil.sendMail(email, RandomVerifyCodeUtil.getVerifyCode());
+                    dataPack.setStatus(Status.NORMAL.getStatus());
+                    return dataPack;
+                } catch (Exception e) {
+                    //TODO 以后可以采用日志在此捕捉邮件发送异常；
+                }
+            } else {
+                //返回邮箱不存在；
+                dataPack.setStatus(Status.EMAIL_NOEXIST.getStatus());
+                return dataPack;
+            }
+        }
+        return dataPack;
     }
 }

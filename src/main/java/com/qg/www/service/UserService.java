@@ -1,6 +1,10 @@
 package com.qg.www.service;
+
+import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author net
@@ -10,65 +14,84 @@ import java.util.List;
 public interface UserService {
     /**
      * 注册
-     * @param email
-     * @param password
-     * @param nickName
-     * @param unSafePassword
-     * @return
+     *
+     * @param email          邮箱
+     * @param password       密码
+     * @param nickName       昵称
+     * @param unSafePassword 未加密的密码
+     * @param verifyCode     验证码；
+     * @return 封装数据；
      */
-    User register(String email, String password, String nickName,String unSafePassword);
+    DataPack register(String email, String password, String nickName, String unSafePassword, Map<String, String> map, String verifyCode);
 
     /**
+     * 登录方法
      *
-     * @param email
-     * @param password
-     * @return
+     * @param email    邮箱
+     * @param password 密码
+     * @return 用户；
      */
-    User login(String email,String password);
+    User login(String email, String password);
 
     /**
      * 修改昵称
-     * @param newNickName
-     * @param userId
-     * @return
+     *
+     * @param newNickName 昵称
+     * @param userId      用户ID
+     * @return 新用户
      */
-    User modifyNickName(String newNickName,int userId);
+    User modifyNickName(String newNickName, int userId);
 
     /**
      * 修改密码
-     * @param password
-     * @param userId
-     * @return
+     *
+     * @param password 新密码
+     * @param userId   用户ID
+     * @return 新用户
      */
-    User modifyPassWord(String password,int userId);
+    User modifyPassWord(String password, int userId);
 
     /**
      * 修改权限
-     * @param status
-     * @param userIdBy
-     * @return
+     *
+     * @param status   权限
+     * @param userIdBy 被修改人的ID
+     * @return 是否成功
      */
-    boolean modifyStatus(int status,int userIdBy);
+    boolean modifyStatus(int status, int userIdBy);
 
     /**
      * 查询用户
+     *
      * @return
      */
     List<User> queryAllUser();
 
     /**
      * 返回重置密码
+     *
      * @param email
      * @param password
      * @return
      */
-    boolean resetPassword(String email,String password);
+    boolean resetPassword(String email, String password);
 
     /**
      * 通过用户ID找到用户并且返回
+     *
      * @param userId 用户ID
      * @return 用户
      */
     User getUserByUserId(int userId);
+
+    /**
+     * 发送邮件
+     *
+     * @param email      邮箱信息；
+     * @param verifyCode 注册码
+     * @param isRegister 是否注册
+     * @return 封装数据；
+     */
+    DataPack sendMail(String email, String verifyCode,String isRegister);
 
 }

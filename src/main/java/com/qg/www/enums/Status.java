@@ -28,7 +28,7 @@ public enum  Status {
     /**
      * 文件删除失败
      */
-    FILE_DELECT_WROSE("505"),
+    FILE_DELETE_WROSE("505"),
     /**
      * 文件名为空
      */

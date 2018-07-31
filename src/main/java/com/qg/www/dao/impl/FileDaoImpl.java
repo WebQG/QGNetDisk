@@ -1,8 +1,11 @@
 package com.qg.www.dao.impl;
 
+import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
+import com.qg.www.beans.User;
 import com.qg.www.dao.FileDao;
-import com.qg.www.utils.DbPoolConnection;
+import com.qg.www.utils.DbPoolConnectionUtil;
+import com.qg.www.utils.DbPoolConnectionUtil;
 import com.qg.www.utils.SqlCloseUtil;
 
 import java.sql.Connection;
@@ -28,20 +31,18 @@ public class FileDaoImpl implements FileDao {
     /**
      * 模糊搜索文件；
      *
-     * @param fileID  目录的ID；
      * @param keyWord 关键字；
      * @return 文件列表；
      */
     @Override
-    public List<NetFile> searchFile(int fileID, String keyWord) {
+    public List<NetFile> searchFile(String keyWord) {
         //创建文件List
         List<NetFile> fileList=new ArrayList<>();
         try {
-            connection=DbPoolConnection.getDataSourceInstance().getConnection();
-            preparedStatement=connection.prepareStatement("SELECT * from file WHERE father_id=? AND file_name LIKE ?;");
-            preparedStatement.setInt(1,fileID);
+            connection=DbPoolConnectionUtil.getDataSourceInstance().getConnection();
+            preparedStatement=connection.prepareStatement("SELECT * from file where file_name LIKE ?;");
             //模糊搜索；
-            preparedStatement.setString(2,"%"+keyWord+"%");
+            preparedStatement.setString(1,"%"+keyWord+"%");
             rs=preparedStatement.executeQuery();
             while (rs.next()){
                 //创建文件；
@@ -85,7 +86,7 @@ public class FileDaoImpl implements FileDao {
             sql="select * from file where father_id=? order by convert ( file_name using gbk)collate gbk_chinese_ci  ;";
         }
         try {
-            connection=DbPoolConnection.getDataSourceInstance().getConnection();
+            connection=DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement(sql);
             preparedStatement.setInt(1,fileId);
             rs=preparedStatement.executeQuery();
@@ -125,7 +126,7 @@ public class FileDaoImpl implements FileDao {
     @Override
     public boolean addFile(String fileName, String userName, int userId, int fatherId, String realPath, String modifyTime, long fileSize) {
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement("INSERT INTO file (file_name,father_id,user_id," +
                     "user_name,modify_time,filesize,real_path)VALUES (?,?,?,?,?,?,?)");
             preparedStatement.setString(1,fileName);
@@ -160,7 +161,7 @@ public class FileDaoImpl implements FileDao {
     public List<NetFile> listFile(int fileId) {
         List<NetFile> fileList = new ArrayList<>();
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("SELECT * FROM file WHERE father_id = ?");
             preparedStatement.setInt(1,fileId);
             rs = preparedStatement.executeQuery();
@@ -187,7 +188,7 @@ public class FileDaoImpl implements FileDao {
     @Override
     public boolean deleteFile(int fileId) {
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("DELETE FROM file WHERE file_id=?");
             preparedStatement.setInt(1,fileId);
             preparedStatement.executeUpdate();
@@ -203,7 +204,7 @@ public class FileDaoImpl implements FileDao {
     @Override
     public int getUserId(int fileId) {
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("SELECT user_id FROM file WHERE file_id = ?");
             preparedStatement.setInt(1,fileId);
             rs = preparedStatement.executeQuery();
@@ -227,7 +228,7 @@ public class FileDaoImpl implements FileDao {
     @Override
     public int getDiretoryByFileId(int fileId) {
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("SELECT father_id FROM file WHERE file_id=?;");
             preparedStatement.setInt(1, fileId);
             rs = preparedStatement.executeQuery();
@@ -249,7 +250,7 @@ public class FileDaoImpl implements FileDao {
     @Override
     public boolean updateDownloadTimes(String realPath) {
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("UPDATE file SET download_times = download_times + 1 WHERE real_path=?");
             preparedStatement.setString(1,realPath);
             preparedStatement.executeUpdate();
@@ -275,7 +276,7 @@ public class FileDaoImpl implements FileDao {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(date);
         try {
-            connection = DbPoolConnection.getDataSourceInstance().getConnection();
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
             preparedStatement = connection.prepareStatement("UPDATE file SET file_name=? ,modify_time = ? WHERE file_id=?;");
             preparedStatement.setString(1, newFileName);
             preparedStatement.setString(2,dateNowStr);
@@ -287,5 +288,38 @@ public class FileDaoImpl implements FileDao {
             SqlCloseUtil.close(connection, preparedStatement, rs);
         }
         return false;
+    }
+
+    /**
+     * 通过文件ID获取文件
+     *
+     * @param fileId 文件ID
+     * @return 文件；
+     */
+    @Override
+    public NetFile getFileById(int fileId) {
+        NetFile netFile=new NetFile();
+        try {
+            connection=DbPoolConnectionUtil.getDataSourceInstance().getConnection();
+            preparedStatement=connection.prepareStatement("SELECT * from file where file_id=?;");
+            preparedStatement.setInt(1,fileId);
+            rs=preparedStatement.executeQuery();
+            while(rs.next()){
+                netFile.setFileId(rs.getInt("file_id"));
+                netFile.setFileName(rs.getString("file_name"));
+                netFile.setFatherId(rs.getInt("father_id"));
+                netFile.setUserId(rs.getInt("user_id"));
+                netFile.setUserName(rs.getString("user_name"));
+                netFile.setModifyTime(rs.getString("modify_time"));
+                netFile.setDownloadTimes(rs.getInt("download_times"));
+                netFile.setRealPath(rs.getString("real_path"));
+            }
+            return netFile;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
+        return null;
     }
 }

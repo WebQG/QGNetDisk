@@ -44,7 +44,6 @@ public class UserLoginServlet extends HttpServlet {
         //根据登录是否成功
         if(null==loginUser){
             dataPack.setStatus(Status.PASSWORD_WROSE.getStatus());
-            dataPack.setData(null);
         }else{
             //打包数据，封装成JSON格式并且响应给客户端；
             dataPack.setStatus(Status.NORMAL.getStatus());

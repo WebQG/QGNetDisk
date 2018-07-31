@@ -22,26 +22,17 @@ import java.io.IOException;
 public class SearchFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //字符串类型文件ID；
-        String strFileId = req.getParameter("fileid");
         //获取关键字；
         String key = req.getParameter("key");
         //创建打包器；
         DataPack dataPack = new DataPack();
         //创建数据对象；
         Data data = new Data();
-        //判断是否满足转化为整型的条件；
-        if (null != strFileId && strFileId.matches("\\d*")) {
-            //转化为整型的目录ID；
-            int fileId = Integer.parseInt(strFileId);
-            FileServiceImpl fileService = new FileServiceImpl();
-            //初始化数据对象；
-            data.setFiles(fileService.searchFile(fileId, key));
-            dataPack.setStatus(Status.NORMAL.getStatus());
-        }else{
-            //否则不返回文件列表；
-            dataPack.setStatus(Status.FILE_NAME_ISEMPTY.getStatus());
-        }
+        FileServiceImpl fileService=new FileServiceImpl();
+        //获取搜索文件列表；
+        data.setFiles(fileService.searchFile(key));
+        //设置状态码；
+        dataPack.setStatus(Status.NORMAL.getStatus());
         //包装数据；
         dataPack.setData(data);
         //打包返回JSON数据；

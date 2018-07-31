@@ -1,6 +1,8 @@
 package com.qg.www.dao;
 
+import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
+import com.qg.www.beans.User;
 
 import java.util.List;
 
@@ -12,11 +14,10 @@ import java.util.List;
 public interface FileDao {
     /**
      * 模糊搜索文件；
-     * @param fileID 文件的ID；
      * @param keyWord 关键字；
      * @return 文件列表；
      */
-    List<NetFile> searchFile(int fileID,String keyWord);
+    List<NetFile> searchFile(String keyWord);
     /**
      * 添加文件或者文件夹
      *
@@ -47,7 +48,7 @@ public interface FileDao {
      * @param fileId 文件或文件夹的ID
      * @return 是否删除成功
      */
-    boolean deleteFile(int fileId);
+   boolean deleteFile(int fileId);
 
     /**
      *
@@ -89,6 +90,14 @@ public interface FileDao {
      * @return 文件列表；
      */
      List<NetFile >listSortedFile( int fileId, String type);
+
+    /**
+     * 通过文件ID获取文件
+     * @param fileId 文件ID
+     * @return 文件；
+     */
+     NetFile getFileById(int fileId);
+
 
 
 
