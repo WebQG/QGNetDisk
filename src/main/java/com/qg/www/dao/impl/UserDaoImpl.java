@@ -1,6 +1,6 @@
 package com.qg.www.dao.impl;
 
-import com.qg.www.Enum.UserStatus;
+import com.qg.www.enums.UserStatus;
 import com.qg.www.beans.User;
 import com.qg.www.dao.UserDao;
 import com.qg.www.utils.DbPoolConnection;
@@ -87,7 +87,7 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public User login(String email, String password) {
-        User user=new User();
+        User user = null;
         try {
             connection=DbPoolConnection.getDataSourceInstance().getConnection();
             preparedStatement=connection.prepareStatement("SELECT * FROM user WHERE email=?;");
@@ -96,6 +96,7 @@ public class UserDaoImpl implements UserDao {
             while(rs.next()){
                 //判断密码是否匹配；
                 if(password.equals(rs.getString("password"))) {
+                    user = new User();
                     user.setEmail(email);
                     user.setPassword(password);
                     String nickName=rs.getString("nickname");

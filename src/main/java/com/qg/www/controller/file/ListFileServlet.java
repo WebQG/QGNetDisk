@@ -1,8 +1,7 @@
 package com.qg.www.controller.file;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.qg.www.Enum.Status;
+import com.qg.www.enums.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.service.impl.FileServiceImpl;

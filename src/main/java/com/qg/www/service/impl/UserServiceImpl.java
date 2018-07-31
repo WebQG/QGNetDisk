@@ -87,4 +87,16 @@ public class UserServiceImpl implements UserService {
         UserDaoImpl userDao = new UserDaoImpl();
         return userDao.queryUser(userId);
     }
+
+    /**
+     * 判断邮箱是否存在
+     *
+     * @param email 邮箱
+     * @return 是否存在
+     */
+    @Override
+    public boolean isExist(String email) {
+        UserDaoImpl userDao = new UserDaoImpl();
+        return userDao.isExist(email);
+    }
 }

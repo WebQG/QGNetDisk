@@ -1,5 +1,7 @@
 package com.qg.www.service;
 import com.qg.www.beans.User;
+import com.qg.www.dao.impl.UserDaoImpl;
+
 import java.util.List;
 
 /**
@@ -71,5 +73,14 @@ public interface UserService {
      */
     User queryUser(int userId);
 
+
+
+    /**
+     * 判断邮箱是否存在
+     * @param email 邮箱
+     * @return 是否存在
+     */
+
+    boolean isExist(String email);
 
 }

@@ -1,7 +1,7 @@
 package com.qg.www.controller.user;
 
 import com.google.gson.Gson;
-import com.qg.www.Enum.Status;
+import com.qg.www.enums.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
@@ -15,6 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author huachen
+ * @version 1.0
+ */
 @WebServlet("/user/modifynickname")
 public class ModifyNickNameServlet extends HttpServlet {
     @Override
@@ -23,14 +27,14 @@ public class ModifyNickNameServlet extends HttpServlet {
         String newNickName = req.getParameter("newnickname");
 
         UserService userService = new UserServiceImpl();
-        User user = userService.modifyNickName(newNickName,Integer.parseInt(userId));
+        User user = userService.modifyNickName(newNickName, Integer.parseInt(userId));
         Gson gson = new Gson();
         DataPack dataPack = new DataPack();
-        if (user != null){
+        if (user != null) {
             Data data = new Data(user);
             dataPack.setStatus("200");
             dataPack.setData(data);
-        }else {
+        } else {
             dataPack.setStatus(Status.INFO_CHANGE_WROSE.getStatus());
         }
         String jsonStr = gson.toJson(dataPack);

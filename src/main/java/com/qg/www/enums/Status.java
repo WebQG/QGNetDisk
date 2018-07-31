@@ -1,4 +1,4 @@
-package com.qg.www.Enum;
+package com.qg.www.enums;
 
 
 public enum  Status {

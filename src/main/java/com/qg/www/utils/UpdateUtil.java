@@ -60,20 +60,6 @@ public class UpdateUtil {
         }
     }
 
-    /**
-     *
-     * @return 获得文件已下载的比例，1为百分百
-     */
-    public double getCompleteRate() {
-        // 统计多条线程已经下载的总大小
-        int sumSize = 0;
-        for (int i = 0; i < threadNum; i++) {
-            sumSize += threads[i].length;
-        }
-        // 返回已经完成的百分比
-        return sumSize * 1.0 / fileSize;
-    }
-
     private class DownThread extends Thread {
         /**
          * 当前线程的下载开始位置
@@ -119,7 +105,6 @@ public class UpdateUtil {
                 currentPart.close();
             } catch (Exception e)
             {
-
                 e.printStackTrace();
             }
         }
