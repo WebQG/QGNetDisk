@@ -10,6 +10,7 @@ import com.qg.www.beans.User;
 import com.qg.www.enums.Status;
 import com.qg.www.service.impl.FileServiceImpl;
 import com.qg.www.service.impl.UserServiceImpl;
+import com.qg.www.utils.UploadUtil;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,26 +28,6 @@ import java.util.List;
 @WebServlet("/file/newfolder")
 public class NewFolderServlet extends HttpServlet {
 
-    public void listFile(HttpServletResponse resp, String fileId, String status) throws IOException {
-        //TODO 工具类包装
-        FileServiceImpl fileService = new FileServiceImpl();
-        // 包装Json
-        DataPack dataPack = new DataPack();
-        // 得到文件目录下的所有文件
-        List<NetFile> files = fileService.listFile(Integer.parseInt(fileId));
-        // 返回一切正常
-        dataPack.setStatus(status);
-        Data data = new Data();
-        data.setFiles(files);
-        dataPack.setData(data);
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-        String jsonStr = gson.toJson(dataPack, DataPack.class);
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().print(jsonStr);
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -59,31 +40,13 @@ public class NewFolderServlet extends HttpServlet {
         // 得到新建文件名
         String fileName = req.getParameter("filename");
 
-        String status = "";
         // 拼出文件的绝对路径
-        String realPath = req.getServletContext().getRealPath("") + filePath + File.separator + fileName;
-        File file = new File(realPath);
-        Gson gson = new Gson();
-        DataPack dataPack = new DataPack();
-        if (!file.exists()) {
-            FileServiceImpl fileService = new FileServiceImpl();
-            UserServiceImpl userService = new UserServiceImpl();
-            User user = userService.queryUser(Integer.parseInt(userId));
+        String realPath = req.getServletContext().getRealPath("") + filePath + "/" + fileName;
 
-            // 文件不存在，新建文件夹，设置一切正常状态码
-            file.mkdir();
+        // 调用Service层得到状态码
+        UserServiceImpl userService = new UserServiceImpl();
+        String status = userService.newFolder(realPath, Integer.parseInt(userId), fileName, Integer.parseInt(fileId), filePath);
 
-            // 得到文件夹创建时间
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String dateNowStr = sdf.format(date);
-
-            fileService.addFile(fileName, user.getNickName(), Integer.parseInt(userId), Integer.parseInt(fileId), filePath, dateNowStr, 0);
-            status = Status.NORMAL.getStatus();
-        } else {
-            status = Status.FILE_NAME_ISEMPTY.getStatus();
-        }
-
-        listFile(resp, fileId, status);
+        UploadUtil.listFile(resp, fileId, status);
     }
 }

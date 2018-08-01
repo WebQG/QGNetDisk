@@ -83,6 +83,9 @@ public class Data {
     @Expose
     private List<NetFile> files;
 
+    @Expose
+    private  List<Message> messages;
+
     public Data() {
     }
 

@@ -24,58 +24,40 @@ public class DownloadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("开始");
         // 得到文件的绝对路径 如QG/移动组/文件.exe
         String filePath = req.getParameter("filepath");
+        //String range = req.getParameter("Range");
         String range = req.getHeader("Range");
+        System.out.println(range);
+        // 得到服务器根目录
+        String ServletContextPath = req.getServletContext().getRealPath("/");
+        System.out.println(filePath);
 
         // 将下载次数+1
         FileServiceImpl fileService = new FileServiceImpl();
         fileService.updateDownloadTimes(filePath);
-        System.out.println(filePath);
 
-        int index;
-        String fileName;
-        File file = new File(req.getServletContext().getRealPath("") + File.separator + filePath);
-        System.out.println(file.getAbsolutePath());
-        if (!file.isDirectory()) {
-            index = filePath.lastIndexOf("/");
-            // 得到文件名
-            fileName = filePath.substring(index + 1, filePath.length());
-            // 得到文件目录
-            filePath = filePath.substring(0, index);
-        } else {
-            ZipUtil.zip(file.getAbsolutePath());
-            //TODO 不能识别的类型
-            index = filePath.lastIndexOf("/");
-            if (index == -1) {
-                fileName = filePath + ".zip";
-                filePath = "";
-            } else {
-                // 得到文件名
-                fileName = filePath.substring(index + 1, filePath.length()) + ".zip";
-                filePath = filePath.substring(0, index);
-                System.out.println(fileName);
-            }
+        File file = new File(ServletContextPath + filePath);
 
-        }
-
+        // 得到文件路径和文件名
+        String[] filePathAndName = DownloadUtil.getFileName(file, filePath);
 
         // 得到文件的MIME类型
-        String mimeType = getServletContext().getMimeType(fileName);
+        String mimeType = getServletContext().getMimeType(filePathAndName[1]);
         // 响应告诉客户端文件类型
-        //resp.setContentType(mimeType);
+        resp.setContentType(mimeType);
         // 编码
-        String newFilename = DownloadUtil.getFilename(req, fileName);
+        String newFilename = DownloadUtil.encodingFilename(req, filePathAndName[1]);
 
         // 设置提示保存或打开
         resp.setHeader("content-disposition", "attachment;filename=" + newFilename);
         resp.setHeader("content-length", String.valueOf(file.length()));
 
         // 得到被下载文件的输入流
-        InputStream is = getServletContext().getResourceAsStream(filePath + File.separator + fileName);
+        System.out.println(filePathAndName[0] + "/" + filePathAndName[1]);
+        InputStream is = getServletContext().getResourceAsStream(filePathAndName[0] + "/" + filePathAndName[1]);
         ServletOutputStream os = resp.getOutputStream();
-        //TODO 判断请求文件是否存在
+
         // 将文件内容输出
         int hasRead;
         byte[] buffer = new byte[1024];
@@ -86,6 +68,9 @@ public class DownloadServlet extends HttpServlet {
             // 定位到起点
             is.skip(startPos);
 
+            System.out.println(startPos);
+            System.out.println(currentPartSize);
+
             while ((length < currentPartSize) && (hasRead = is.read(buffer)) != -1) {
                 length += hasRead;
                 os.write(buffer, 0, hasRead);
@@ -95,9 +80,13 @@ public class DownloadServlet extends HttpServlet {
                 os.write(buffer, 0, hasRead);
             }
         }
+        resp.setHeader("content-length",String.valueOf(length));
+        System.out.println(length);
 
         System.out.println("结束");
         os.close();
         is.close();
+
+
     }
 }

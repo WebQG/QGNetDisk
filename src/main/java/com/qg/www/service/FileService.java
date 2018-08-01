@@ -6,7 +6,11 @@ import com.qg.www.beans.NetFile;
 import com.qg.www.beans.User;
 import com.qg.www.enums.Status;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Part;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public interface FileService {
@@ -100,6 +104,21 @@ public interface FileService {
      */
     String getFileNameById(int fileID);
 
+    /**
+     * 将文件上传至服务器
+     *
+     * @param servletContextPath 服务器端的根目录
+     * @param filePath 文件的相对路径
+     * @param fileName  文件名
+     * @param range  请求的文件范围
+     * @param part  上传文件的Part实例
+     * @param userId  用户ID
+     * @param fileId  文件ID
+     * @param fileSize  文件大小
+     * @throws IOException
+     */
+    void uploadFile(String servletContextPath,String filePath ,String fileName, String range,Part part,
+                    int userId,int fileId,long fileSize) throws IOException;
 
-
+    long downloadFile(String range,InputStream is, ServletOutputStream os) throws IOException;
 }

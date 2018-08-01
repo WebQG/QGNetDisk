@@ -250,7 +250,7 @@ public class UserServiceImpl implements UserService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateNowStr = sdf.format(date);
 
-            fileService.addFile(fileName, user.getNickName(), userId, fileId, filePath, dateNowStr, 0);
+            fileService.addFile(fileName, user.getNickName(), userId, fileId, filePath + "/", dateNowStr, 0);
             status = Status.NORMAL.getStatus();
         } else {
             status = Status.FILE_NAME_ISEMPTY.getStatus();
