@@ -1,10 +1,7 @@
 package com.qg.www.dao.impl;
 
-import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
-import com.qg.www.beans.User;
 import com.qg.www.dao.FileDao;
-import com.qg.www.utils.DbPoolConnectionUtil;
 import com.qg.www.utils.DbPoolConnectionUtil;
 import com.qg.www.utils.SqlCloseUtil;
 

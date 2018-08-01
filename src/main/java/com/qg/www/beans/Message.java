@@ -37,6 +37,15 @@ public class Message {
      */
     @SerializedName("userid")
     private int userId;
-
+    /**
+     * 动作名称；
+     */
+    @SerializedName("action")
+    private String action;
+    /**
+     * 根组别名称；
+     */
+    @SerializedName("rootpath")
+    private String rootPath;
 }
 
