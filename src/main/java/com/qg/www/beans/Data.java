@@ -75,6 +75,9 @@ public class Data {
     @SerializedName("operatorid")
     private int operatorID;
 
+    @Expose
+    private  List<Message> messages;
+
     private int status;
 
     @Expose

@@ -6,6 +6,7 @@ import com.qg.www.beans.User;
 import com.qg.www.dao.impl.FileDaoImpl;
 import com.qg.www.dao.impl.UserDaoImpl;
 import com.qg.www.enums.Status;
+import com.qg.www.enums.UserStatus;
 import com.qg.www.service.UserService;
 import com.qg.www.utils.DigestUtil;
 import com.qg.www.utils.RandomVerifyCodeUtil;
@@ -112,12 +113,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean modifyStatus(int status, int userIdBy) {
+    public DataPack modifyStatus(Data data) {
+        DataPack dataPack = new DataPack();
         UserDaoImpl userDao = new UserDaoImpl();
-        if (userDao.modifyStatus(status, userIdBy)) {
-            return true;
+        int operatoredId = data.getOperatorID();
+        int userId = data.getUserId();
+        //获取操作人权限；
+        int userStatus = getUserByUserId(userId).getStatus();
+        //被操作人权限；
+        int operatoredStatus = getUserByUserId(operatoredId).getStatus();
+        //判断是否有权限提升或者撤销管理员；
+        if (userStatus > operatoredStatus && userStatus == UserStatus.SUPER_ADMIN.getUserStatus()) {
+            //判断是撤销还是提升；
+            if (operatoredStatus == UserStatus.ORDINARY_USER.getUserStatus()) {
+                //提升；
+                userDao.modifyStatus(UserStatus.ORDINARY_ADMIN.getUserStatus(), operatoredId);
+                System.out.println("asdasd");
+            } else {
+                //撤销；
+                userDao.modifyStatus(UserStatus.ORDINARY_USER.getUserStatus(), operatoredId);
+            }
+            dataPack.setStatus(Status.NORMAL.getStatus());
+            dataPack.setData(null);
+        } else {
+            dataPack.setStatus(Status.STATUS_NO.getStatus());
+            dataPack.setData(null);
         }
-        return false;
+
+
+
+        return dataPack;
     }
 
     @Override
@@ -219,7 +244,7 @@ public class UserServiceImpl implements UserService {
             dataPack.setStatus(Status.NORMAL.getStatus());
             map.remove(email);
             return dataPack;
-        }else {
+        } else {
             dataPack.setStatus(Status.VERIFYCODE_WROSE.getStatus());
             return dataPack;
         }

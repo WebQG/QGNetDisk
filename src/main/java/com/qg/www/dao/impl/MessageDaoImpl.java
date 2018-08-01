@@ -3,6 +3,8 @@ package com.qg.www.dao.impl;
 import com.qg.www.beans.Message;
 import com.qg.www.dao.MessageDao;
 import com.qg.www.utils.DbPoolConnectionUtil;
+import com.qg.www.utils.SqlCloseUtil;
+
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;
@@ -39,22 +41,31 @@ public class MessageDaoImpl implements MessageDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
         }
         return messageList;
 
     }
-
-    /**
-     * @param time       动作发生的时间
-     * @param operatorId 被操作人的ID
-     * @param userId     操作人的ID
-     * @param content    动态内容
-     * @param root       根目录
-     * @param action     动作
-     * @return 是否添加成功
-     */
     @Override
     public boolean addMessage(String time, int operatorId, int userId, String content, String root, String action) {
+        try {
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
+            preparedStatement = connection.prepareStatement("INSERT INTO message  (time,operator_id," +
+                    "user_id, content, root, action) VALUES (?,?,?,?,?,?) ;");
+            preparedStatement.setString(1,time);
+            preparedStatement.setInt(2,operatorId);
+            preparedStatement.setInt(3,userId);
+            preparedStatement.setString(4,content);
+            preparedStatement.setString(5,root);
+            preparedStatement.setString(6,action);
+            preparedStatement.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
         return false;
     }
 
@@ -65,6 +76,16 @@ public class MessageDaoImpl implements MessageDao {
      */
     @Override
     public boolean cleanMessage() {
+        try {
+            connection = DbPoolConnectionUtil.getDataSourceInstance().getConnection();
+            preparedStatement = connection.prepareStatement("DELETE FROM message ;");
+            preparedStatement.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            SqlCloseUtil.close(connection,preparedStatement,rs);
+        }
         return false;
     }
 }
