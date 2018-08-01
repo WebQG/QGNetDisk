@@ -62,4 +62,15 @@ public class MessageServiceImpl implements MessageService {
     public boolean cleanMessage() {
         return messageDao.cleanMessage();
     }
+
+    /**
+     * 根据用户ID实现轮询查找用户的最新信息，且为被超级管理员删除
+     *
+     * @param userID
+     * @return
+     */
+    @Override
+    public DataPack reportMessage(int userID) {
+        return null;
+    }
 }

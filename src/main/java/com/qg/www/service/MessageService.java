@@ -1,12 +1,13 @@
 package com.qg.www.service;
 
 import com.qg.www.beans.DataPack;
-import com.qg.www.beans.Message;
 
-import java.util.List;
-
+/**
+ * @author net
+ * @version 1.5
+ * 消息dao层接口；
+ */
 public interface MessageService {
-
     /**
      * 得到某人的文件动态
      *
@@ -31,4 +32,11 @@ public interface MessageService {
      * @return 是否操作成功
      */
     boolean cleanMessage();
+
+    /**
+     * 根据用户ID实现轮询查找用户的最新信息，且为被超级管理员删除
+     * @param userID
+     * @return
+     */
+    DataPack reportMessage(int userID);
 }

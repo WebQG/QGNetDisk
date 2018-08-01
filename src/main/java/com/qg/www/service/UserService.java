@@ -53,12 +53,10 @@ public interface UserService {
 
     /**
      * 修改权限
-     *
-     * @param status   权限
-     * @param userIdBy 被修改人的ID
+     * @param data 数据源；
      * @return 是否成功
      */
-    boolean modifyStatus(int status, int userIdBy);
+    DataPack modifyStatus(Data data);
 
     /**
      * 查询用户
