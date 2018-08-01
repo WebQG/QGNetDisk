@@ -16,7 +16,7 @@ import java.util.Properties;
  * @version 1.0
  * @author linxu
  */
-public class DbPoolConnection {
+public class DbPoolConnectionUtil {
     /**
      * 声明数据源类变量
      */
@@ -28,7 +28,7 @@ public class DbPoolConnection {
     /**
      * 默认原始连接池实例为空；
      */
-    private static DbPoolConnection poolConnectionInstance = null;
+    private static DbPoolConnectionUtil poolConnectionInstance = null;
 
     /**
      * 静态代码块；
@@ -86,15 +86,15 @@ public class DbPoolConnection {
         return (DruidPooledConnection) dataSource.getConnection();
     }
 
-    public static synchronized DbPoolConnection getDataSourceInstance() {
+    public static synchronized DbPoolConnectionUtil getDataSourceInstance() {
         if (poolConnectionInstance == null) {
             //创建单例；
-            poolConnectionInstance = new DbPoolConnection();
+            poolConnectionInstance = new DbPoolConnectionUtil();
         }
         return poolConnectionInstance;
     }
 
-    private DbPoolConnection() {
+    private DbPoolConnectionUtil() {
     }
 }
 

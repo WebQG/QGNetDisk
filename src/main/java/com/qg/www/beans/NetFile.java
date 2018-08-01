@@ -21,12 +21,14 @@ public class NetFile {
     @Expose
     @SerializedName("fileid")
     private int fileId;
+
     /**
      * 文件名
      */
     @Expose
     @SerializedName("filename")
     private String fileName;
+
     /**
      * 父节点ID
      */
@@ -39,30 +41,35 @@ public class NetFile {
     @Expose
     @SerializedName("userid")
     private int userId;
+
     /**
      * 用户名
      */
     @Expose
     @SerializedName("username")
     private String userName;
+
     /**
      * 修改时间
      */
     @Expose
     @SerializedName("modifytime")
     private String modifyTime;
+
     /**
      * 下载次数统计
      */
     @Expose
     @SerializedName("downloadtimes")
     private int downloadTimes;
+
     /**
      * 文件大小
      */
     @Expose
     @SerializedName("filesize")
     private long fileSize;
+
     /**
      * 文件的路径
      */

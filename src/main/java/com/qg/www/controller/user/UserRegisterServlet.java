@@ -1,7 +1,6 @@
 package com.qg.www.controller.user;
 
 import com.google.gson.Gson;
-import com.qg.www.enums.Status;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
@@ -42,30 +41,12 @@ public class UserRegisterServlet extends HttpServlet {
         String password = DigestUtil.md5(data.getPassword());
         User user;
         //创建数据打包器；
-        DataPack dataPack = new DataPack();
-        //TODO 后期修改为邮箱验证码常量；
+        DataPack dataPack ;
         //获取验证码的map集合
         Map<String, String> map = ((Map) req.getServletContext().getAttribute("map"));
-        if (map == null || !verifyCode.equals(map.get(email))) {
-            dataPack.setStatus(Status.VERIFYCODE_WROSE.getStatus());
-            dataPack.setData(null);
-        } else {
-            //注册用户
-            UserServiceImpl userService = new UserServiceImpl();
-            user = userService.register(email, password, nickName,unSafePassword);
-            //邮箱是否存在；
-            if (null != user) {
-                user.setPassword(unSafePassword);
-                Data datas = new Data(user);
-                dataPack.setStatus(Status.NORMAL.getStatus());
-                dataPack.setData(datas);
-            } else {
-                //邮箱已经被注册
-                data = null;
-                dataPack.setStatus(Status.EMIAL_ISREGISTER.getStatus());
-                dataPack.setData(data);
-            }
-        }
+        //注册用户；
+        UserServiceImpl userService=new UserServiceImpl();
+        dataPack=userService.register(email,password,nickName,unSafePassword,map,verifyCode);
         //验证完成之后，判断是否为空,包不包含用户邮箱，包含则删除；
         if(map!=null&&map.containsKey(email)){
             map.remove(email);

@@ -1,7 +1,11 @@
 package com.qg.www.enums;
 
-
-public enum  Status {
+/**
+ * @author zenghuachen
+ * @version 1.3
+ * 返回状态码枚举类；
+ */
+public enum Status {
     /**
      * 一切正常
      */
@@ -25,7 +29,7 @@ public enum  Status {
     /**
      * 文件删除失败
      */
-    FILE_DELECT_WROSE("505"),
+    FILE_DELETE_WROSE("505"),
     /**
      * 文件名为空
      */
@@ -40,10 +44,12 @@ public enum  Status {
     INFO_CHANGE_WROSE("508");
 
     private String status;
-    Status(String status){
+
+    Status(String status) {
         this.status = status;
     }
-    public String getStatus(){
+
+    public String getStatus() {
         return status;
     }
 }

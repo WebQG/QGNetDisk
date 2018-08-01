@@ -14,41 +14,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 列出文件列表；
- *
  * @author linxu
- * @version 1.2
+ * @version 1.3
+ * 模糊搜索控制；
  */
-@WebServlet("/file/listfile")
-public class ListFileServlet extends HttpServlet {
+@WebServlet("/file/searchfile")
+public class SearchFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //定义目录号；
-        int fileId;
-        //定义排序类型；
-        String type;
-        //获取目录号
-        fileId = Integer.parseInt(req.getParameter("fileid"));
-        //获取排序类型；
-        type=req.getParameter("type");
-        FileServiceImpl fileService = new FileServiceImpl();
+        //获取关键字；
+        String key = req.getParameter("key");
         //创建打包器；
         DataPack dataPack = new DataPack();
-        //实例化数据；
+        //创建数据对象；
         Data data = new Data();
-        //如果类型为空，则是直接显示目录下面的文件；
-        if (null==type){
-            //初始化数据；
-            data.setFiles(fileService.listFile(fileId));
-        }else {
-            //否则则按照排序进行查找；
-            data.setFiles(fileService.listSortedFile(fileId,type));
-        }
+        FileServiceImpl fileService=new FileServiceImpl();
+        //获取搜索文件列表；
+        data.setFiles(fileService.searchFile(key));
         //设置状态码；
         dataPack.setStatus(Status.NORMAL.getStatus());
+        //包装数据；
         dataPack.setData(data);
+        //打包返回JSON数据；
         resp.getWriter().print(new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(dataPack));
-
     }
-
 }

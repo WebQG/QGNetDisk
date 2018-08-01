@@ -13,7 +13,7 @@ import javax.mail.Address;
  * @author net
  * @version 1.0
  */
-public class SendMail {
+public class SendMailUtil {
     /**
      * 邮箱验证码发送；
      * @param email

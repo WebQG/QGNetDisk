@@ -1,8 +1,9 @@
 package com.qg.www.dao;
 
+import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
+import com.qg.www.beans.User;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -12,12 +13,11 @@ import java.util.List;
  */
 public interface FileDao {
     /**
-     * 查询所有文件；
-     *
-     * @return 文件列表
+     * 模糊搜索文件；
+     * @param keyWord 关键字；
+     * @return 文件列表；
      */
-    List<NetFile> listAllFile();
-    //TODO 搜索排序
+    List<NetFile> searchFile(String keyWord);
     /**
      * 添加文件或者文件夹
      *
@@ -48,7 +48,7 @@ public interface FileDao {
      * @param fileId 文件或文件夹的ID
      * @return 是否删除成功
      */
-    boolean deleteFile(int fileId);
+   boolean deleteFile(int fileId);
 
     /**
      *
@@ -66,8 +66,14 @@ public interface FileDao {
      */
     int getDiretoryByFileId(int fileId);
 
-   /* List<NetFile >listSortedFile( );*/
-
+    /**
+     * 重命名文件
+     *
+     * @param fileId      文件ID
+     * @param newFileName  新的文件名
+     * @return 是否成功修改
+     */
+    boolean modifyFileName(int fileId, String newFileName);
     /**
      *
      * 用户下载时使文件下载量加1
@@ -76,6 +82,22 @@ public interface FileDao {
      * @return 是否增加成功
      */
     boolean updateDownloadTimes(String realPath);
+
+    /**
+     * 排序浏览文件；
+     * @param fileId 父目录ID
+     * @param type 排序方式；
+     * @return 文件列表；
+     */
+     List<NetFile >listSortedFile( int fileId, String type);
+
+    /**
+     * 通过文件ID获取文件
+     * @param fileId 文件ID
+     * @return 文件；
+     */
+     NetFile getFileById(int fileId);
+
 
 
 
