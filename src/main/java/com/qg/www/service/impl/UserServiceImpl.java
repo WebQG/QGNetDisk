@@ -4,7 +4,9 @@ import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.User;
 import com.qg.www.dao.impl.FileDaoImpl;
+import com.qg.www.dao.impl.MessageDaoImpl;
 import com.qg.www.dao.impl.UserDaoImpl;
+import com.qg.www.enums.MessageActions;
 import com.qg.www.enums.Status;
 import com.qg.www.enums.UserStatus;
 import com.qg.www.service.UserService;
@@ -12,7 +14,10 @@ import com.qg.www.utils.DigestUtil;
 import com.qg.www.utils.RandomVerifyCodeUtil;
 import com.qg.www.utils.SendMailUtil;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -124,14 +129,26 @@ public class UserServiceImpl implements UserService {
         int operatoredStatus = getUserByUserId(operatoredId).getStatus();
         //判断是否有权限提升或者撤销管理员；
         if (userStatus > operatoredStatus && userStatus == UserStatus.SUPER_ADMIN.getUserStatus()) {
+
+            MessageDaoImpl messageDao = new MessageDaoImpl();
+            // 得到当前日期
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dateNowStr = sdf.format(date);
+
             //判断是撤销还是提升；
             if (operatoredStatus == UserStatus.ORDINARY_USER.getUserStatus()) {
                 //提升；
                 userDao.modifyStatus(UserStatus.ORDINARY_ADMIN.getUserStatus(), operatoredId);
-                System.out.println("asdasd");
+                // 将消息动态加入数据库
+                messageDao.addMessage(dateNowStr, operatoredId, userId, null,
+                        null, MessageActions.UPGRADE.getAction());
             } else {
                 //撤销；
                 userDao.modifyStatus(UserStatus.ORDINARY_USER.getUserStatus(), operatoredId);
+                // 将消息动态加入数据库
+                messageDao.addMessage(dateNowStr, operatoredId, userId, null,
+                        null, MessageActions.DOWNGRADE.getAction());
             }
             dataPack.setStatus(Status.NORMAL.getStatus());
             dataPack.setData(null);
@@ -139,7 +156,6 @@ public class UserServiceImpl implements UserService {
             dataPack.setStatus(Status.STATUS_NO.getStatus());
             dataPack.setData(null);
         }
-
 
 
         return dataPack;
@@ -248,5 +264,35 @@ public class UserServiceImpl implements UserService {
             dataPack.setStatus(Status.VERIFYCODE_WROSE.getStatus());
             return dataPack;
         }
+    }
+
+    /**
+     * 创建新文件夹
+     *
+     * @return 创建文件夹的状态码
+     */
+    @Override
+    public String newFolder(String realPath, int userId, String fileName, int fileId, String filePath) {
+        String status;
+        File file = new File(realPath);
+        if (!file.exists()) {
+            FileServiceImpl fileService = new FileServiceImpl();
+            UserServiceImpl userService = new UserServiceImpl();
+            User user = userService.getUserByUserId(userId);
+
+            // 文件不存在，新建文件夹，设置一切正常状态码
+            file.mkdir();
+
+            // 得到文件夹创建时间
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dateNowStr = sdf.format(date);
+
+            fileService.addFile(fileName, user.getNickName(), userId, fileId, filePath + "/", dateNowStr, 0);
+            status = Status.NORMAL.getStatus();
+        } else {
+            status = Status.FILE_NAME_ISEMPTY.getStatus();
+        }
+        return status;
     }
 }

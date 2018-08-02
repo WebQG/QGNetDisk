@@ -101,4 +101,9 @@ public interface UserService {
      */
     DataPack validateMail(Data data, Map<String, String> map);
 
+    /**
+     * 创建新文件夹
+     * @return 创建文件夹的状态码
+     */
+    String newFolder(String realPath, int userId, String fileName, int fileId, String filePath);
 }

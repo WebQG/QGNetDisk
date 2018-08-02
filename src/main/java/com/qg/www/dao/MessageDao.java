@@ -34,4 +34,20 @@ public interface MessageDao {
      * @return 是否操作成功
      */
     boolean cleanMessage();
+
+    /**
+     * 查询用户文件被超管删除的信息；
+     *
+     * @param userId 用户 ID
+     * @return 消息列表；
+     */
+    List<Message> listUserMessage(int userId);
+
+    /**
+     * 改变消息状态；
+     *
+     * @param messageList 消息列表；
+     * @return 是否成功小改。
+     */
+    boolean modifyMessageStatus(List<Message> messageList);
 }

@@ -5,13 +5,22 @@ import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
 import com.qg.www.beans.User;
 import com.qg.www.dao.impl.FileDaoImpl;
+import com.qg.www.dao.impl.MessageDaoImpl;
 import com.qg.www.dao.impl.UserDaoImpl;
+import com.qg.www.enums.MessageActions;
 import com.qg.www.enums.Status;
 import com.qg.www.service.FileService;
+import com.qg.www.utils.UploadUtil;
 import org.apache.commons.io.FileUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Part;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class FileServiceImpl implements FileService {
@@ -142,6 +151,23 @@ public class FileServiceImpl implements FileService {
                 //修改数据库存储；
                 FileDaoImpl fileDao = new FileDaoImpl();
                 fileDao.modifyFileName(fileId, newFileName);
+
+                MessageDaoImpl messageDao = new MessageDaoImpl();
+                // 得到当前日期
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String dateNowStr = sdf.format(date);
+
+                String root;
+
+                if (path.split("\\\\")[5].split("/").length > 1) {
+                    root = path.split("\\\\")[5].split("/")[1];
+                } else {
+                    root = path.split("\\\\")[5].split("/")[0];
+                }
+                messageDao.addMessage(dateNowStr, operator.getUserId(), user.getUserId(), fileName + "_" + newFileName,
+                        root, MessageActions.RENAME_FILE.getAction());
+
                 //返回新的文件列表；
                 data1.setFiles(fileDao.listFile(fileDao.getDiretoryByFileId(fileId)));
                 //设置正常状态码；
@@ -205,6 +231,22 @@ public class FileServiceImpl implements FileService {
         FileDaoImpl fileDao = new FileDaoImpl();
         //打开文件；
         File file = new File(filePath + fileName);
+
+        MessageDaoImpl messageDao = new MessageDaoImpl();
+        // 得到当前日期
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateNowStr = sdf.format(date);
+
+        String root;
+
+        // 得到文件的根目录
+        if (filePath.split("\\\\")[5].split("/").length > 2) {
+            root = filePath.split("\\\\")[5].split("/")[1];
+        } else {
+            root = filePath.split("\\\\")[5].split("/")[0];
+        }
+
         //判断操作者与被操作者的权限；
         if (operator.getStatus() > fileUser.getStatus()) {
             //能够删除；
@@ -225,6 +267,12 @@ public class FileServiceImpl implements FileService {
             data1.setFiles(listFile(fatherId));
             dataPack.setData(data1);
             dataPack.setStatus(Status.NORMAL.getStatus());
+
+            System.out.println(filePath);
+
+            messageDao.addMessage(dateNowStr, operator.getUserId(), fileUser.getUserId(), fileName,
+                    root, MessageActions.DELETE_FILE.getAction());
+
             //倘若文件是自己的，则删除自己的文件；
         } else if (fileUser.getUserId() == operator.getUserId()) {
             //能够删除；
@@ -245,6 +293,10 @@ public class FileServiceImpl implements FileService {
             dataPack.setStatus(Status.NORMAL.getStatus());
             dataPack.setData(data1);
             //没有权限则是删除失败；返回父目录；
+
+            messageDao.addMessage(dateNowStr, operator.getUserId(), operator.getUserId(), fileName,
+                    root, MessageActions.DELETE_FILE.getAction());
+
         } else {
             data1.setFiles(listFile(fatherId));
             dataPack.setStatus(Status.FILE_DELETE_WROSE.getStatus());
@@ -265,4 +317,116 @@ public class FileServiceImpl implements FileService {
         NetFile file = fileDao.getFileById(fileID);
         return file.getFileName();
     }
+
+    /**
+     * 将文件上传至服务器
+     *
+     * @param servletContextPath 服务器端的根目录
+     * @param filePath           文件的相对路径
+     * @param fileName           文件名
+     * @param range              请求的文件范围
+     * @param part               上传文件的Part实例
+     * @param userId             用户ID
+     * @param fileId             文件ID
+     * @param fileSize           文件大小
+     * @throws IOException
+     */
+    @Override
+    public void uploadFile(String servletContextPath, String filePath, String fileName, String range, Part part,
+                           int userId, int fileId, long fileSize)
+            throws IOException {
+        // 服务器端文件的写入起点
+        long startPos = 0;
+        // 一共写入的字节数
+        long length;
+        // 当前需要写入的字节数
+        long currentPartSize;
+        File filePathFile;
+
+        // 判断文件的父目录是否存在
+        if (new File(servletContextPath + filePath).exists()) {
+            // 判断是否是断点续传
+            if (range == null) {
+                // 新的上传
+                filePathFile = UploadUtil.createOrRenameFile(new File(servletContextPath
+                        + filePath + File.separator + fileName));
+                // 得到本次写入的长度
+                length = UploadUtil.writeTo(filePathFile, part, 0, fileSize);
+            } else {
+                // 得到文件写入的起点位置
+                startPos = Integer.parseInt(range.split("-")[0].split("=")[1]);
+                // 本次文件需要写入的字节数
+                currentPartSize = Integer.parseInt(range.split("-")[1]) - startPos;
+
+                filePathFile = new File(servletContextPath + filePath + File.separator + fileName);
+                length = UploadUtil.writeTo(filePathFile, part, startPos, currentPartSize);
+            }
+            // 文件已上传完毕
+            if (startPos + length + 500 >= fileSize) {
+                FileServiceImpl fileService = new FileServiceImpl();
+                UserServiceImpl userService = new UserServiceImpl();
+                // 得到当前时间
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String dateNowStr = sdf.format(date);
+                User user = userService.getUserByUserId(userId);
+                // 向数据库添加file信息
+                fileService.addFile(filePathFile.getName(), user.getNickName(), userId, userId,
+                        filePath + "/", dateNowStr, fileSize);
+                // 向数据库添加message动态
+                MessageDaoImpl messageDao = new MessageDaoImpl();
+
+                System.out.println(filePath);
+                System.out.println((filePath + "/").split("/").length);
+                String root;
+                if ((filePath + "/").split("/").length > 1) {
+                    root = (filePath + "/").split("/")[1];
+                } else {
+                    root = (filePath + "/").split("/")[0];
+                }
+
+                messageDao.addMessage(dateNowStr, userId, userId, filePathFile.getName(), root, MessageActions.UPLOAD_FILE.getAction());
+            }
+        } else {
+            //TODO 文件夹不存在
+        }
+
+    }
+
+    @Override
+    public long downloadFile(String range, InputStream is, ServletOutputStream os) throws IOException {
+        long startPos;
+        long currentPartSize;
+        long length = 0;
+        // 将文件内容输出
+        int hasRead;
+        byte[] buffer = new byte[1024];
+        if (range != null) {
+            // 得到断点的起点和需要读写的大小
+            startPos = Integer.parseInt(range.split("-")[0].split("=")[1]);
+            currentPartSize = Integer.parseInt(range.split("-")[1]) - startPos;
+            // 定位到起点
+            System.out.println(is);
+            is.skip(startPos);
+
+            System.out.println(startPos);
+            System.out.println(currentPartSize);
+
+            while ((length < currentPartSize) && (hasRead = is.read(buffer)) != -1) {
+                length += hasRead;
+                os.write(buffer, 0, hasRead);
+                FileOutputStream fileOutputStream = new FileOutputStream(new File("D:/123.txt"));
+                fileOutputStream.write(buffer, 0, hasRead);
+            }
+
+        } else {
+            while ((hasRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, hasRead);
+            }
+        }
+
+        return length;
+    }
+
+
 }

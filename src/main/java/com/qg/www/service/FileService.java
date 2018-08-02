@@ -4,13 +4,15 @@ import com.qg.www.beans.Data;
 import com.qg.www.beans.DataPack;
 import com.qg.www.beans.NetFile;
 import com.qg.www.beans.User;
-import com.qg.www.enums.Status;
 
-import java.io.File;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-public interface FileService {
 
+public interface FileService {
     /**
      * 得到该文件或文件夹创建人的权限
      *
@@ -25,7 +27,7 @@ public interface FileService {
      * @param keyWord 关键字
      * @return 文件列表；
      */
-    List<NetFile> searchFile( String keyWord);
+    List<NetFile> searchFile(String keyWord);
 
     /**
      * 添加文件或者文件夹
@@ -60,12 +62,13 @@ public interface FileService {
 
     /**
      * 修改文件的名称，同时返回新的文件列表
+     *
      * @param data
-     * @param path        文件根目录路径；
-     * @param dataPack    数据处理
+     * @param path     文件根目录路径；
+     * @param dataPack 数据处理
      * @return 新的文件列表
      */
-    DataPack renameFile(Data data, String path,  DataPack dataPack);
+    DataPack renameFile(Data data, String path, DataPack dataPack);
 
     /**
      * 用户下载时使文件下载量加1
@@ -91,13 +94,32 @@ public interface FileService {
      * @param filePath 文件路径
      * @return 包装数据；
      */
-    DataPack deleteFile(String filePath,Data data);
+    DataPack deleteFile(String filePath, Data data);
 
     /**
      * 通过文件ID获取文件名称；
+     *
      * @param fileID 文件ID
      * @return 文件名称；
      */
     String getFileNameById(int fileID);
 
+    /**
+     * 将文件上传至服务器
+     *
+     * @param servletContextPath 服务器端的根目录
+     * @param filePath           文件的相对路径
+     * @param fileName           文件名
+     * @param range              请求的文件范围
+     * @param part               上传文件的Part实例
+     * @param userId             用户ID
+     * @param fileId             文件ID
+     * @param fileSize           文件大小
+     * @throws IOException
+     */
+    void uploadFile(String servletContextPath, String filePath, String fileName, String range, Part part,
+                    int userId, int fileId, long fileSize) throws IOException;
+
+    long downloadFile(String range, InputStream is, ServletOutputStream os) throws IOException;
 }
+

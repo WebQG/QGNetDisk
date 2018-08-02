@@ -3,6 +3,7 @@ package com.qg.www.service.impl;
 import com.qg.www.beans.Data;
 import com.qg.www.beans.Message;
 import com.qg.www.dao.impl.MessageDaoImpl;
+import com.qg.www.enums.Status;
 import com.qg.www.service.MessageService;
 import com.qg.www.beans.DataPack;
 
@@ -23,9 +24,9 @@ public class MessageServiceImpl implements MessageService {
 
         // 查询数据库得到操作人与被操作人昵称
         UserServiceImpl userService = new UserServiceImpl();
-        for(Message message : messages){
+        for (Message message : messages) {
             message.setOperatorName(userService.getUserByUserId(message.getOperatorId()).getNickName());
-            if(message.getUserId() != 0){
+            if (message.getUserId() != 0) {
                 message.setUserName(userService.getUserByUserId(message.getUserId()).getNickName());
             }
         }
@@ -50,7 +51,7 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public boolean addMessage(String time, int operatorId, int userId, String content, String root, String action) {
-        return messageDao.addMessage(time, operatorId,userId, content, root, action);
+        return messageDao.addMessage(time, operatorId, userId, content, root, action);
     }
 
     /**
@@ -71,6 +72,20 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public DataPack reportMessage(int userID) {
-        return null;
+        //数据包装；
+        DataPack dataPack = new DataPack();
+        List<Message> messageList = messageDao.listUserMessage(userID);
+        Data data = new Data();
+        data.setMessages(messageList);
+        messageDao.modifyMessageStatus(messageList);
+        //如果消息列表为空；则返回非200状态码；
+        if(messageList.isEmpty()){
+            dataPack.setStatus("222");
+            dataPack.setData(null);
+        }else{
+            dataPack.setStatus(Status.NORMAL.getStatus());
+            dataPack.setData(data);
+        }
+        return dataPack;
     }
 }
